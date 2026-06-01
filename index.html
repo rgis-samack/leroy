@@ -249,7 +249,7 @@
         <div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1>Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 01/06/2026 às 15:35:36</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 01/06/2026 às 15:52:53</div>
         </div>
         <button id="btn-download" class="download-btn" onclick="downloadPDF()">📥 Baixar PDF</button>
     </div>
@@ -259,7 +259,7 @@
         <div style="display:none; margin-bottom: 20px;" id="pdf-title">
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1 style="margin: 0;">Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 01/06/2026 às 15:35:36</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 01/06/2026 às 15:52:53</div>
         </div>
 
         <!-- Controles de Visualização -->
@@ -281,7 +281,7 @@
 
     <script>
         const reportData = [{"Setor": "C050", "Categoria": "MADEIRAS", "Range_Full": "02 - C050 - MADEIRAS", "Total_Area": 100, "Areas_Contadas": 33, "Areas_Faltantes": 67, "Progresso": "33.00%", "Progresso_Num": 33.0}, {"Setor": "C070", "Categoria": "MADEIRAS", "Range_Full": "02 - C070 - MADEIRAS", "Total_Area": 41, "Areas_Contadas": 16, "Areas_Faltantes": 25, "Progresso": "39.02%", "Progresso_Num": 39.02}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C050 - FERRAMENTAS", "Total_Area": 105, "Areas_Contadas": 29, "Areas_Faltantes": 76, "Progresso": "27.62%", "Progresso_Num": 27.62}, {"Setor": "C070", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C070 - FERRAMENTAS", "Total_Area": 50, "Areas_Contadas": 34, "Areas_Faltantes": 16, "Progresso": "68.00%", "Progresso_Num": 68.0}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09 - C050 - JARDIM", "Total_Area": 143, "Areas_Contadas": 53, "Areas_Faltantes": 90, "Progresso": "37.06%", "Progresso_Num": 37.06}, {"Setor": "C070", "Categoria": "JARDIM", "Range_Full": "09 - C070 - JARDIM", "Total_Area": 56, "Areas_Contadas": 20, "Areas_Faltantes": 36, "Progresso": "35.71%", "Progresso_Num": 35.71}, {"Setor": "C070", "Categoria": "FERRAGENS", "Range_Full": "10 - C070 - FERRAGENS", "Total_Area": 40, "Areas_Contadas": 14, "Areas_Faltantes": 26, "Progresso": "35.00%", "Progresso_Num": 35.0}, {"Setor": "C050", "Categoria": "DECORACAO", "Range_Full": "12 - C050 - DECORACAO", "Total_Area": 89, "Areas_Contadas": 31, "Areas_Faltantes": 58, "Progresso": "34.83%", "Progresso_Num": 34.83}, {"Setor": "C070", "Categoria": "DECORACAO", "Range_Full": "12 - C070 - DECORACAO", "Total_Area": 40, "Areas_Contadas": 6, "Areas_Faltantes": 34, "Progresso": "15.00%", "Progresso_Num": 15.0}, {"Setor": "C050", "Categoria": "ILUMINACAO", "Range_Full": "13 - C050 - ILUMINACAO", "Total_Area": 117, "Areas_Contadas": 38, "Areas_Faltantes": 79, "Progresso": "32.48%", "Progresso_Num": 32.48}, {"Setor": "C070", "Categoria": "ILUMINACAO", "Range_Full": "13 - C070 - ILUMINACAO", "Total_Area": 50, "Areas_Contadas": 29, "Areas_Faltantes": 21, "Progresso": "58.00%", "Progresso_Num": 58.0}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C050 - ORGANIZACAO", "Total_Area": 76, "Areas_Contadas": 39, "Areas_Faltantes": 37, "Progresso": "51.32%", "Progresso_Num": 51.32}, {"Setor": "C070", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C070 - ORGANIZACAO", "Total_Area": 50, "Areas_Contadas": 50, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15 - C050 - COZINHAS", "Total_Area": 67, "Areas_Contadas": 22, "Areas_Faltantes": 45, "Progresso": "32.84%", "Progresso_Num": 32.84}, {"Setor": "C070", "Categoria": "COZINHAS", "Range_Full": "15 - C070 - COZINHAS", "Total_Area": 62, "Areas_Contadas": 62, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}];
-        const generationDate = "01/06/2026 às 15:35:36"; 
+        const generationDate = "01/06/2026 às 15:52:53"; 
         let currentViewName = '';
 
         function getProgressBarColor(progresso) {
