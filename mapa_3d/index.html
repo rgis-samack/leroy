@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leroy Merlin - Mapa 3D</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Import maps polyfill -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Container for the 3D Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- Watermark Logo Leroy Merlin -->
+    <div id="watermark">
+        <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="100,0 20,70 180,70" fill="#78B833" />
+            <text x="100" y="85" font-family="Arial Black, sans-serif" font-weight="900" font-size="14" fill="#78B833" text-anchor="middle">LEROY</text>
+            <text x="100" y="100" font-family="Arial Black, sans-serif" font-weight="900" font-size="14" fill="#78B833" text-anchor="middle">MERLIN</text>
+        </svg>
+    </div>
+
+    <!-- Minimap Container -->
+    <div id="minimap-container">
+        <canvas id="minimap-canvas"></canvas>
+    </div>
+
+    <!-- Sector List (Right Side) -->
+    <div id="sector-list-container">
+        <h3 class="list-title">Navegação Rápida</h3>
+        <div id="sector-list"></div>
+    </div>
+
+    <!-- UI Overlay: Search -->
+    <div id="search-container">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Pesquisar setor (ex: Pintura)">
+            <button id="search-btn">🔍</button>
+        </div>
+        <div id="search-results" class="hidden"></div>
+    </div>
+
+    <!-- UI Overlay: Sidebar Panel -->
+    <div id="sidebar-panel" class="hidden">
+        <button id="close-btn">&times;</button>
+        <h2 id="sector-title">Nome do Setor</h2>
+        <div class="panel-content">
+            <div class="stat-box">
+                <span class="stat-label">Áreas Faltantes:</span>
+                <span id="sector-faltantes" class="stat-value">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Progresso Atual:</span>
+                <span id="sector-progresso" class="stat-value" style="color: var(--primary);">0%</span>
+            </div>
+            <div id="sector-breakdown" style="margin: 15px 0; max-height: 200px; overflow-y: auto; font-size: 0.8rem; background: #f9f9f9; border-radius: 4px; padding: 8px;"></div>
+
+        </div>
+    </div>
+
+    <!-- Main Module Script -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
