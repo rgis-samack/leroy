@@ -109,7 +109,7 @@ export function setupKeyboardNavigation(camera, controls) {
     });
 }
 
-export function selectSector(sectorData, camera, controls) {
+export function selectSector(sectorData, camera, controls, isTour = false) {
     if (sortedSectorsCache.length > 0) {
         currentSectorIndex = sortedSectorsCache.indexOf(sectorData);
     }
@@ -146,7 +146,32 @@ export function selectSector(sectorData, camera, controls) {
     }
 
     // Move camera
-    const targetPos = new THREE.Vector3(sectorData.x, 800, sectorData.z + 800);
+    let targetY = 800;
+    let targetXOffset = 0;
+    let targetZOffset = 800;
+    
+    if (isTour) {
+        // Randomize angles for dynamic tour
+        const rand = Math.random();
+        if (rand < 0.33) {
+            // Low angle
+            targetY = 200;
+            targetXOffset = (Math.random() > 0.5 ? 1 : -1) * 600;
+            targetZOffset = (Math.random() > 0.5 ? 1 : -1) * 600;
+        } else if (rand < 0.66) {
+            // Medium side angle
+            targetY = 400;
+            targetXOffset = 800;
+            targetZOffset = 200;
+        } else {
+            // High angle
+            targetY = 800;
+            targetXOffset = 0;
+            targetZOffset = 800;
+        }
+    }
+
+    const targetPos = new THREE.Vector3(sectorData.x + targetXOffset, targetY, sectorData.z + targetZOffset);
     const lookAtPos = new THREE.Vector3(sectorData.x, 0, sectorData.z);
     
     moveCameraTo(targetPos, lookAtPos, 1.5, controls);
@@ -167,7 +192,7 @@ let tourInterval = null;
 export function cycleNextSector(camera, controls) {
     if (sortedSectorsCache.length === 0) return;
     currentSectorIndex = (currentSectorIndex + 1) % sortedSectorsCache.length;
-    selectSector(sortedSectorsCache[currentSectorIndex], camera, controls);
+    selectSector(sortedSectorsCache[currentSectorIndex], camera, controls, true);
 }
 
 export function startTour(camera, controls) {

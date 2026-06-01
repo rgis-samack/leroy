@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
+export const animatedWorkers = [];
+
 export function buildEmployees(scene, sectorsData) {
     // Array of possible hard hat colors
     const hatColors = [0xffffff, 0xffcc00, 0x0055ff, 0xffaa00];
@@ -74,8 +76,13 @@ export function buildEmployees(scene, sectorsData) {
     holdBox.position.set(-2, 14, 4);
     holdBox.castShadow = true;
 
+    leftArm.name = 'leftArm';
+    rightArm.name = 'rightArm';
+    head.name = 'head';
+
     // We will leave the hat out of the base person group so we can add it dynamically
     const personBaseGroup = new THREE.Group();
+    personBaseGroup.name = 'personBaseGroup';
     personBaseGroup.add(legs, torso, head, leftArm, rightArm, holdBox);
     
     // Position person on the ladder
@@ -86,30 +93,32 @@ export function buildEmployees(scene, sectorsData) {
     fullAssembly.add(ladderGroup);
     fullAssembly.add(personBaseGroup);
 
+    // 3.5 WALKING ASSEMBLY (Just person)
+    const walkingAssembly = new THREE.Group();
+    const walkingPersonGroup = personBaseGroup.clone();
+    walkingPersonGroup.position.set(0, 0, 0); // Ground level
+    walkingAssembly.add(walkingPersonGroup);
+
     // 4. SCATTERING AROUND SECTORS
-    // We will place 1 to 3 workers per sector randomly
     sectorsData.forEach(sector => {
-        // Quantidade de trabalhadores baseada no tamanho do setor (1 a 3)
-        const workerCount = 1 + Math.floor(Math.random() * 3);
+        const ladderWorkerCount = 1 + Math.floor(Math.random() * 2);
+        const walkingWorkerCount = 2 + Math.floor(Math.random() * 4); // 2 to 5 walking
 
-        for (let i = 0; i < workerCount; i++) {
-            const workerClone = fullAssembly.clone();
+        const createWorker = (assembly, isWalking) => {
+            const workerClone = assembly.clone();
 
-            // Create a custom hat for this clone
+            // Add hat to head directly so it scales/moves with the head
             const hatGeo = new THREE.CylinderGeometry(1.6, 2, 1.5, 16);
-            // Pick random color
             const hatColor = hatColors[Math.floor(Math.random() * hatColors.length)];
             const customHatMat = new THREE.MeshStandardMaterial({ color: hatColor, roughness: 0.3 });
             const hat = new THREE.Mesh(hatGeo, customHatMat);
-            
-            // Position hat on head (relative to personBaseGroup which is at y=10)
-            hat.position.set(0, 26, 2); // 10 (base) + 14.5 (head) + 1.5 (offset)
+            hat.position.set(0, 2.5, 0); // Relative to head
             hat.castShadow = true;
-            workerClone.add(hat);
+            
+            const headMesh = workerClone.getObjectByName('head');
+            if (headMesh) headMesh.add(hat);
 
-            // Calculate a random position within the sector boundaries
-            // Sector x, z is center. Width and length are dimensions.
-            // Shrink bounds slightly so they don't clip into walls
+            // Sector Bounds
             const hw = (sector.width / 2) * 0.8;
             const hl = (sector.length / 2) * 0.8;
             
@@ -117,16 +126,95 @@ export function buildEmployees(scene, sectorsData) {
             const randomZ = sector.z + (Math.random() * 2 - 1) * hl;
 
             workerClone.position.set(randomX, 0, randomZ);
-
-            // Random rotation so they face different directions
             workerClone.rotation.y = Math.random() * Math.PI * 2;
 
-            // Scale slightly to match the world sizing
-            // A shelf is ~55 units high. Our assembly is ~30 units high. This fits well!
-            const randomScale = 0.9 + Math.random() * 0.2; // 0.9 to 1.1
+            const randomScale = 0.9 + Math.random() * 0.2;
             workerClone.scale.set(randomScale, randomScale, randomScale);
 
             scene.add(workerClone);
+            
+            animatedWorkers.push({
+                isWalking: isWalking,
+                group: workerClone,
+                person: workerClone.getObjectByName('personBaseGroup'),
+                leftArm: workerClone.getObjectByName('leftArm'),
+                rightArm: workerClone.getObjectByName('rightArm'),
+                head: headMesh,
+                offset: Math.random() * Math.PI * 2,
+                // Walking specifics
+                target: isWalking ? new THREE.Vector3(
+                    sector.x + (Math.random() * 2 - 1) * hw,
+                    0,
+                    sector.z + (Math.random() * 2 - 1) * hl
+                ) : null,
+                sectorBounds: { x: sector.x, z: sector.z, hw, hl },
+                speed: 15 + Math.random() * 10
+            });
+        };
+
+        for (let i = 0; i < ladderWorkerCount; i++) createWorker(fullAssembly, false);
+        for (let i = 0; i < walkingWorkerCount; i++) createWorker(walkingAssembly, true);
+    });
+}
+
+// Global clock for delta time
+const clock = new THREE.Clock();
+
+export function updateEmployees() {
+    const time = clock.getElapsedTime();
+    const delta = clock.getDelta();
+
+    animatedWorkers.forEach(worker => {
+        const t = time * 2 + worker.offset;
+        
+        if (!worker.isWalking) {
+            // LADDER WORKER ANIMATION
+            if(worker.head) worker.head.rotation.y = Math.sin(t * 0.5) * 0.5;
+            if(worker.leftArm) worker.leftArm.rotation.x = -Math.PI / 3 + Math.sin(t) * 0.2;
+            if(worker.rightArm) worker.rightArm.rotation.x = -Math.PI / 6 + Math.cos(t) * 0.1;
+            if(worker.person) worker.person.position.y = 10 + Math.sin(t * 1.5) * 0.5;
+        } else {
+            // WALKING WORKER ANIMATION
+            if (!worker.target) return;
+
+            // Move towards target
+            const currentPos = worker.group.position;
+            const distance = currentPos.distanceTo(worker.target);
+
+            if (distance < 2) {
+                // Reached target, pick a new one
+                const bounds = worker.sectorBounds;
+                worker.target.set(
+                    bounds.x + (Math.random() * 2 - 1) * bounds.hw,
+                    0,
+                    bounds.z + (Math.random() * 2 - 1) * bounds.hl
+                );
+            } else {
+                // Move logic (simplified without delta for smooth look using time)
+                // Just use basic vector math
+                const dir = new THREE.Vector3().subVectors(worker.target, currentPos).normalize();
+                
+                // Rotation (smooth lookAt)
+                const targetAngle = Math.atan2(dir.x, dir.z);
+                
+                // Simple lerp for rotation
+                let rotDiff = targetAngle - worker.group.rotation.y;
+                // Normalize diff to -PI to PI
+                while(rotDiff > Math.PI) rotDiff -= Math.PI * 2;
+                while(rotDiff < -Math.PI) rotDiff += Math.PI * 2;
+                worker.group.rotation.y += rotDiff * 0.1;
+
+                // Move forward
+                worker.group.position.addScaledVector(dir, worker.speed * 0.016); // assume 60fps delta
+                
+                // Bobbing while walking
+                worker.person.position.y = Math.abs(Math.sin(time * 8 + worker.offset)) * 1.5;
+                
+                // Swinging arms
+                if(worker.leftArm) worker.leftArm.rotation.x = Math.sin(time * 8 + worker.offset) * 0.8;
+                if(worker.rightArm) worker.rightArm.rotation.x = -Math.sin(time * 8 + worker.offset) * 0.8;
+                if(worker.head) worker.head.rotation.y = Math.sin(t * 0.3) * 0.2;
+            }
         }
     });
 }

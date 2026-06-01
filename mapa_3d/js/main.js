@@ -7,7 +7,7 @@ import { buildShelves } from './shelves.js';
 import { createLabels } from './labels.js';
 import { setupSearch, setupSidebar, selectSector, populateSectorList, setupKeyboardNavigation, startTour, stopTour } from './search.js';
 import { sectorsData } from './store.js';
-import { buildEmployees } from './employees.js';
+import { buildEmployees, updateEmployees } from './employees.js';
 
 // Get container
 const container = document.getElementById('canvas-container');
@@ -166,6 +166,7 @@ function animate() {
     controls.update();
 
     // Render main scene
+    updateEmployees(clock.getElapsedTime());
     renderer.render(scene, camera);
 
 }
