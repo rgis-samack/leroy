@@ -3,464 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventário Finalizado</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
-    
+    <title>Dashboard de Progresso</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         :root {
-            --brand-color: #78B928;
-            --dynamic-hue: 0deg;
-            --mouse-x: 50%;
-            --mouse-y: 50%;
+            --primary: #800020;
+            --primary-hover: #9c0b2d;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
         }
 
-        body, html {
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #030303;
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+
+        .header-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            font-family: 'Montserrat', sans-serif;
-            overflow: hidden;
-            user-select: none;
-            perspective: 1500px; /* Perspectiva profunda para o efeito 3D */
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
         }
-
-        /* Efeito de luz mágica no fundo que acompanha o mouse */
-        .bg-glow {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(
-                circle 800px at var(--mouse-x) var(--mouse-y), 
-                rgba(120, 185, 40, 0.15), 
-                transparent 60%
-            );
-            z-index: 0;
-            pointer-events: none;
-            filter: hue-rotate(var(--dynamic-hue));
-        }
-
-        #canvas-bg {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            filter: hue-rotate(var(--dynamic-hue));
-        }
-
-        #score-container {
-            position: absolute;
-            top: 30px;
-            right: 40px;
-            color: white;
-            font-size: 20px;
-            font-weight: 900;
-            z-index: 20;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 15px 30px;
-            border-radius: 50px;
-            border: 1px solid rgba(120, 185, 40, 0.3);
-            box-shadow: 0 0 30px rgba(120, 185, 40, 0.2);
-            backdrop-filter: blur(10px);
-            transition: transform 0.1s ease, border-color 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        #score-container span {
-            color: var(--brand-color);
-            filter: hue-rotate(var(--dynamic-hue));
-            font-size: 32px;
-            text-shadow: 0 0 15px rgba(120, 185, 40, 0.8);
-        }
-
-        /* O container agora é transparente, sem bordas ou fundo */
-        .content-wrapper {
-            position: relative;
-            z-index: 5;
-            text-align: center;
-            /* Efeito de levitação */
-            animation: float 6s ease-in-out infinite;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .lm-logo {
-            position: relative;
-            width: 260px;
-            height: 180px;
-            margin: 0 auto 50px auto;
-            transform-style: preserve-3d;
-        }
-
-        .triangle {
-            width: 0; 
-            height: 0; 
-            border-left: 120px solid transparent;
-            border-right: 120px solid transparent;
-            border-bottom: 150px solid var(--brand-color);
-            position: absolute;
-            bottom: 0;
-            left: 10px;
-            filter: hue-rotate(var(--dynamic-hue)) drop-shadow(0 0 40px rgba(120, 185, 40, 0.6));
-            transition: filter 0.1s ease;
-            transform: translateZ(30px); /* Pula pra fora da tela em 3D */
-        }
-
-        .text-leroy, .text-merlin {
-            position: absolute;
-            color: white;
-            font-weight: 900;
-            font-size: 34px;
-            letter-spacing: 2px;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transform: translateZ(50px); /* Fica mais saltado que o triângulo */
-        }
-
-        .text-leroy { transform: rotate(-52deg) translateZ(50px); left: -40px; top: 60px; }
-        .text-merlin { transform: rotate(52deg) translateZ(50px); right: -45px; top: 60px; }
 
         h1 {
-            font-size: 5.5rem;
-            color: white;
+            color: var(--primary);
             margin: 0;
-            letter-spacing: -2px;
-            font-weight: 900;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .download-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background-color: #e9ecef;
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(128, 0, 32, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background-color: #dee2e6;
+        }
+
+        /* ----- ESTILOS PADRÃO (VISÃO NORMAL) ----- */
+        #content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sector-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            page-break-inside: avoid;
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+        }
+
+        .sector-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--text-light);
             text-transform: uppercase;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            transform: translateZ(40px);
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
         }
 
-        h1 span {
-            color: var(--brand-color);
-            filter: hue-rotate(var(--dynamic-hue));
-            transition: filter 0.1s ease;
-            text-shadow: 0 0 50px rgba(120, 185, 40, 0.6);
+        tr:last-child td {
+            border-bottom: none;
         }
 
-        .checkmark-wrapper {
-            margin-top: 50px;
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 18px;
+            overflow: hidden;
             display: flex;
-            justify-content: center;
-            transform: translateZ(60px);
-        }
-
-        .checkmark {
-            width: 80px;
-            height: 80px;
-            border: 4px solid var(--brand-color);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
             align-items: center;
-            filter: hue-rotate(var(--dynamic-hue));
-            box-shadow: 0 0 30px rgba(120, 185, 40, 0.4), inset 0 0 20px rgba(120, 185, 40, 0.2);
-            animation: pulse 2s infinite;
+            position: relative;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(120, 185, 40, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(120, 185, 40, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(120, 185, 40, 0); }
+        .progress-bar {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.5s ease-in-out;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .checkmark svg { width: 40px; height: 40px; fill: none; stroke: var(--brand-color); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* Estilos do Mini-Game Otimizados para Alto Impacto */
-        .falling-item {
+        .progress-text {
             position: absolute;
-            top: -100px;
-            cursor: crosshair;
-            z-index: 10;
-            transition: transform 0.1s;
-            animation: fall linear forwards;
-            filter: drop-shadow(0 0 20px rgba(120, 185, 40, 0.9));
-        }
-        
-        .falling-item:active { transform: scale(0.6); }
-
-        .falling-triangle {
-            width: 0; height: 0; 
-            border-left: 35px solid transparent;
-            border-right: 35px solid transparent;
-            border-bottom: 50px solid var(--brand-color);
+            width: 100%;
+            text-align: center;
+            color: #333;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
-        @keyframes fall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(calc(100vh + 100px)) rotate(720deg); opacity: 0; }
+        .faltantes {
+            color: var(--danger);
+            font-weight: bold;
         }
 
-        /* Explosão épica */
-        .particle {
-            position: absolute;
-            width: 12px;
+        /* ----- VISÃO COMPACTA (AGRUPAR POR NOME / 6 POR PÁGINA) ----- */
+        #content-area.compact-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: start;
+        }
+
+        #content-area.compact-view .sector-card {
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        #content-area.compact-view .sector-header {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
+        #content-area.compact-view th, 
+        #content-area.compact-view td {
+            padding: 4px 6px;
+            font-size: 0.65rem;
+        }
+
+        #content-area.compact-view th {
+            font-size: 0.6rem;
+        }
+
+        #content-area.compact-view .progress-container {
+            border-radius: 5px;
             height: 12px;
-            background-color: #ffd700;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 15;
-            animation: explodeEpic 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-            box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
         }
 
-        @keyframes explodeEpic {
-            0% { opacity: 1; transform: scale(2) translate(0, 0); filter: brightness(2); }
-            100% { opacity: 0; transform: scale(0) translate(var(--tx), var(--ty)); filter: brightness(1); }
+        #content-area.compact-view .progress-text {
+            font-size: 0.55rem;
         }
 
-        .floating-money {
-            position: absolute;
-            color: #ffd700;
-            font-size: 45px;
-            font-weight: 900;
-            pointer-events: none;
-            z-index: 16;
-            animation: floatMoneyEpic 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,140,0,0.8);
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        @keyframes floatMoneyEpic {
-            0% { opacity: 0; transform: translateY(20px) scale(0.5); }
-            20% { opacity: 1; transform: translateY(0) scale(1.5); }
-            100% { opacity: 0; transform: translateY(-150px) scale(2); }
-        }
-
+        /* --- RESPONSIVIDADE MOBILE --- */
         @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            .lm-logo { transform: scale(0.6); margin-bottom: 0px; }
-            .checkmark { width: 60px; height: 60px; }
-            .checkmark svg { width: 30px; height: 30px; }
-            #score-container { top: 20px; right: 20px; font-size: 14px; padding: 10px 20px; }
-            #score-container span { font-size: 24px; }
-            .text-leroy { transform: rotate(-52deg) translateZ(0); }
-            .text-merlin { transform: rotate(52deg) translateZ(0); }
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab-btn {
+                flex: 1 1 40%;
+                font-size: 0.8rem;
+                padding: 8px 5px;
+                text-align: center;
+            }
+            #map-container {
+                height: 75vh !important;
+                min-height: 600px !important;
+                box-shadow: none !important; /* Remove sombra no mobile para mesclar melhor */
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header-container" data-html2canvas-ignore="true">
+        <div>
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
+            <h1>Relatório de Progresso Dinâmico</h1>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 31/05/2026 às 21:04:30</div>
+        </div>
+        <button id="btn-download" class="download-btn" onclick="downloadPDF()">📥 Baixar PDF</button>
+    </div>
 
-    <!-- Fundo Interativo de Constelação em Canvas -->
-    <canvas id="canvas-bg"></canvas>
-
-    <div class="bg-glow"></div>
-
-    <div id="score-container">Pontos 💰 <br><span id="score">0</span></div>
-
-    <!-- Container sem bordas, apenas levitando os elementos em 3D -->
-    <div class="content-wrapper" id="scene">
-        
-        <div class="lm-logo" id="logo">
-            <div class="triangle"></div>
-            <div class="text-leroy">LEROY</div>
-            <div class="text-merlin">MERLIN</div>
+    <div class="container" id="pdf-content">
+        <!-- Título que aparece só no PDF gerado -->
+        <div style="display:none; margin-bottom: 20px;" id="pdf-title">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
+            <h1 style="margin: 0;">Relatório de Progresso Dinâmico</h1>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 31/05/2026 às 21:04:30</div>
         </div>
 
-        <h1>Inventario <span>Finalizado</span></h1>
-
-        <div class="checkmark-wrapper">
-            <div class="checkmark">
-                <svg viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
+        <!-- Controles de Visualização -->
+        <div class="tabs" data-html2canvas-ignore="true">
+            <button class="tab-btn active" onclick="renderView('mapa')">Mapa 3D</button>
+            <button class="tab-btn" onclick="renderView('setor')">Agrupar por Setor</button>
+            <button class="tab-btn" onclick="renderView('categoria')">Agrupar por Nome</button>
+            <button class="tab-btn" onclick="renderView('progresso')">Ordenar por Progresso Geral</button>
         </div>
 
+        <!-- Mapa 3D Container -->
+        <div id="map-container" style="width: 100%; height: 75vh; min-height: 500px; margin-bottom: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" data-html2canvas-ignore="true">
+            <iframe src="mapa_3d/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+
+        <!-- Onde os dados serão injetados -->
+        <div id="content-area" style="display: none;"></div>
     </div>
 
     <script>
-        const scene = document.getElementById("scene");
-        const scoreEl = document.getElementById("score");
-        const scoreContainer = document.getElementById("score-container");
-        let score = 0;
+        const reportData = [{"Setor": "C050", "Categoria": "MATERIAIS BASICOS", "Range_Full": "01- C050 - MATERIAIS BASICOS", "Total_Area": 397, "Areas_Contadas": 379, "Areas_Faltantes": 18, "Progresso": "95.47%", "Progresso_Num": 95.47}, {"Setor": "C070", "Categoria": "MADEIRAS", "Range_Full": "02 - C070 - MADEIRAS", "Total_Area": 29, "Areas_Contadas": 29, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "MADEIRAS", "Range_Full": "02- C050 - MADEIRAS", "Total_Area": 248, "Areas_Contadas": 207, "Areas_Faltantes": 41, "Progresso": "83.47%", "Progresso_Num": 83.47}, {"Setor": "C050", "Categoria": "ELETRICA", "Range_Full": "03 - C050 - ELETRICA", "Total_Area": 89, "Areas_Contadas": 89, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "ELETRICA", "Range_Full": "03 - C070 - ELETRICA", "Total_Area": 37, "Areas_Contadas": 37, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ELETRICA", "Range_Full": "03- C050 - ELETRICA", "Total_Area": 638, "Areas_Contadas": 329, "Areas_Faltantes": 309, "Progresso": "51.57%", "Progresso_Num": 51.57}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C050 - FERRAMENTAS", "Total_Area": 20, "Areas_Contadas": 20, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C070 - FERRAMENTAS", "Total_Area": 3, "Areas_Contadas": 3, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04- C050 - FERRAMENTAS", "Total_Area": 524, "Areas_Contadas": 248, "Areas_Faltantes": 276, "Progresso": "47.33%", "Progresso_Num": 47.33}, {"Setor": "C050", "Categoria": "CERAMICAS", "Range_Full": "05- C050 - CERAMICAS", "Total_Area": 154, "Areas_Contadas": 143, "Areas_Faltantes": 11, "Progresso": "92.86%", "Progresso_Num": 92.86}, {"Setor": "C050", "Categoria": "PISOS", "Range_Full": "06- C050 - PISOS", "Total_Area": 15, "Areas_Contadas": 12, "Areas_Faltantes": 3, "Progresso": "80.00%", "Progresso_Num": 80.0}, {"Setor": "C050", "Categoria": "SANITARIOS", "Range_Full": "07 - C050 - SANITARIOS", "Total_Area": 38, "Areas_Contadas": 38, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "SANITARIOS", "Range_Full": "07 - C070 - SANITARIOS", "Total_Area": 72, "Areas_Contadas": 72, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "SANITARIOS", "Range_Full": "07- C050 - SANITARIOS", "Total_Area": 890, "Areas_Contadas": 468, "Areas_Faltantes": 422, "Progresso": "52.58%", "Progresso_Num": 52.58}, {"Setor": "C050", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C050 - ENCANAMENTOS", "Total_Area": 36, "Areas_Contadas": 36, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C070 - ENCANAMENTOS", "Total_Area": 2, "Areas_Contadas": 2, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ENCANAMENTOS", "Range_Full": "08- C050 - ENCANAMENTOS", "Total_Area": 356, "Areas_Contadas": 65, "Areas_Faltantes": 291, "Progresso": "18.26%", "Progresso_Num": 18.26}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09 - C050 - JARDIM", "Total_Area": 39, "Areas_Contadas": 39, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "JARDIM", "Range_Full": "09 - C070 - JARDIM", "Total_Area": 60, "Areas_Contadas": 60, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09- C050 - JARDIM", "Total_Area": 656, "Areas_Contadas": 308, "Areas_Faltantes": 348, "Progresso": "46.95%", "Progresso_Num": 46.95}, {"Setor": "C050", "Categoria": "FERRAGENS", "Range_Full": "10 - C050 - FERRAGENS", "Total_Area": 51, "Areas_Contadas": 51, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "FERRAGENS", "Range_Full": "10 - C070 - FERRAGENS", "Total_Area": 7, "Areas_Contadas": 7, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAGENS", "Range_Full": "10- C050 - FERRAGENS", "Total_Area": 580, "Areas_Contadas": 184, "Areas_Faltantes": 396, "Progresso": "31.72%", "Progresso_Num": 31.72}, {"Setor": "C050", "Categoria": "PINTURA", "Range_Full": "11 - C050 - PINTURA", "Total_Area": 36, "Areas_Contadas": 36, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "PINTURA", "Range_Full": "11- C050 - PINTURA", "Total_Area": 496, "Areas_Contadas": 396, "Areas_Faltantes": 100, "Progresso": "79.84%", "Progresso_Num": 79.84}, {"Setor": "C070", "Categoria": "DECORACAO", "Range_Full": "12 - C070 - DECORACAO", "Total_Area": 43, "Areas_Contadas": 43, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "DECORACAO", "Range_Full": "12- C050 - DECORACAO", "Total_Area": 853, "Areas_Contadas": 579, "Areas_Faltantes": 274, "Progresso": "67.88%", "Progresso_Num": 67.88}, {"Setor": "C050", "Categoria": "TAPETES", "Range_Full": "12- C050 - TAPETES", "Total_Area": 142, "Areas_Contadas": 133, "Areas_Faltantes": 9, "Progresso": "93.66%", "Progresso_Num": 93.66}, {"Setor": "C070", "Categoria": "ILUMINACAO", "Range_Full": "13 - C070 - ILUMINACAO", "Total_Area": 151, "Areas_Contadas": 151, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ILUMINACAO", "Range_Full": "13- C050 - ILUMINACAO", "Total_Area": 830, "Areas_Contadas": 538, "Areas_Faltantes": 292, "Progresso": "64.82%", "Progresso_Num": 64.82}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C050 - ORGANIZACAO", "Total_Area": 52, "Areas_Contadas": 52, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C070 - ORGANIZACAO", "Total_Area": 56, "Areas_Contadas": 56, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14- C050 - ORGANIZACAO", "Total_Area": 445, "Areas_Contadas": 404, "Areas_Faltantes": 41, "Progresso": "90.79%", "Progresso_Num": 90.79}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15 - C050 - COZINHAS", "Total_Area": 38, "Areas_Contadas": 38, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "COZINHAS", "Range_Full": "15 - C070 - COZINHAS", "Total_Area": 62, "Areas_Contadas": 62, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15- C050 - COZINHAS", "Total_Area": 574, "Areas_Contadas": 436, "Areas_Faltantes": 138, "Progresso": "75.96%", "Progresso_Num": 75.96}, {"Setor": "C050", "Categoria": "FRENTE DE", "Range_Full": "C050 - FRENTE DE", "Total_Area": 155, "Areas_Contadas": 76, "Areas_Faltantes": 79, "Progresso": "49.03%", "Progresso_Num": 49.03}, {"Setor": "Outros", "Categoria": "Outros", "Range_Full": "CAIXA", "Total_Area": 0, "Areas_Contadas": 0, "Areas_Faltantes": 0, "Progresso": "0.00%", "Progresso_Num": 0.0}];
+        const generationDate = "31/05/2026 às 21:04:30"; 
+        let currentViewName = '';
 
-        // Efeito de Mouse: Cores, Luzes e Parallax 3D
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-
-        document.addEventListener("mousemove", (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-
-            // 1. Efeito de Luz no fundo
-            document.documentElement.style.setProperty("--mouse-x", `${mouseX}px`);
-            document.documentElement.style.setProperty("--mouse-y", `${mouseY}px`);
-            
-            // 2. Mudança Mágica de Cor
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            const distX = (mouseX - centerX) / centerX;
-            const distY = (mouseY - centerY) / centerY;
-            
-            const hue = (distX * 50) + (distY * 40); 
-            document.documentElement.style.setProperty("--dynamic-hue", `${hue}deg`);
-
-            // 3. Efeito Parallax 3D Holgráfico (Incrível)
-            // O texto e o logo se movem na direção oposta ao mouse em 3 dimensões
-            const rotateX = (distY * -15).toFixed(2); // Até 15 graus de rotação
-            const rotateY = (distX * 15).toFixed(2);
-            scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        // ----- SISTEMA DO CANVAS (CONSTELAÇÃO DE LUZES) -----
-        const canvas = document.getElementById("canvas-bg");
-        const ctx = canvas.getContext("2d");
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-
-        // Cria as partículas de luz ao fundo
-        for (let i = 0; i < 80; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 1.5,
-                vy: (Math.random() - 0.5) * 1.5,
-                radius: Math.random() * 2 + 1
-            });
+        function getProgressBarColor(progresso) {
+            if (progresso === 100) return 'var(--success)';
+            if (progresso >= 50) return 'var(--warning)';
+            return 'var(--danger)';
         }
 
-        function drawCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = "rgba(120, 185, 40, 0.6)";
-            ctx.lineWidth = 1;
+        function createTableHTML(rows) {
+            let tbody = rows.map(r => `
+                <tr>
+                    <td>${r.Range_Full}</td>
+                    <td>${r.Setor}</td>
+                    <td>${r.Categoria}</td>
+                    <td>${r.Total_Area}</td>
+                    <td>${r.Areas_Contadas}</td>
+                    <td class="${r.Areas_Faltantes > 0 ? 'faltantes' : ''}">${r.Areas_Faltantes}</td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${r.Progresso_Num}%; background-color: ${getProgressBarColor(r.Progresso_Num)};"></div>
+                            <span class="progress-text">${r.Progresso}</span>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
 
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                
-                // Bate nas bordas e volta
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Conecta partículas próximas
-                for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j];
-                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                    if (dist < 120) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        // A linha fica mais transparente quanto mais longe
-                        ctx.strokeStyle = `rgba(120, 185, 40, ${0.2 - dist/600})`;
-                        ctx.stroke();
-                    }
-                }
-                
-                // Conecta com o mouse
-                let distMouse = Math.hypot(p.x - mouseX, p.y - mouseY);
-                if (distMouse < 200) {
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(mouseX, mouseY);
-                    ctx.strokeStyle = `rgba(120, 185, 40, ${0.4 - distMouse/500})`;
-                    ctx.stroke();
-                }
+            return `
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="min-width: 600px;">
+                        <thead>
+                            <tr>
+                                <th width="25%">Range</th>
+                                <th width="8%">Setor</th>
+                                <th width="15%">Nome</th>
+                                <th width="10%">Total Área</th>
+                                <th width="10%">Áreas Contadas</th>
+                                <th width="10%">Faltantes</th>
+                                <th width="22%">Progresso</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tbody}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderView(viewType) {
+            // Atualizar botões se o evento existir
+            if(event) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                event.currentTarget.classList.add('active');
             }
-            requestAnimationFrame(drawCanvas);
-        }
-        drawCanvas();
 
-        // ----- SISTEMA DO MINI-GAME (Épico) -----
-        function spawnLeroy() {
-            const item = document.createElement("div");
-            item.className = "falling-item";
+            const contentArea = document.getElementById('content-area');
+            const mapContainer = document.getElementById('map-container');
+            const btnDownload = document.getElementById('btn-download');
+
+            if (viewType === 'mapa') {
+                contentArea.style.display = 'none';
+                mapContainer.style.display = 'block';
+                btnDownload.style.display = 'none';
+                return;
+            } else {
+                contentArea.style.display = '';
+                mapContainer.style.display = 'none';
+                btnDownload.style.display = 'inline-block';
+            }
+
+            contentArea.innerHTML = '';
+
+            // Adicionar layout compacto apenas se a visualização for 'categoria'
+            if (viewType === 'categoria') {
+                contentArea.classList.add('compact-view');
+            } else {
+                contentArea.classList.remove('compact-view');
+            }
+
+            if (viewType === 'setor') {
+                currentViewName = 'Agrupado por Setor';
+                const grouped = {};
+                reportData.forEach(item => {
+                    if (!grouped[item.Setor]) grouped[item.Setor] = [];
+                    grouped[item.Setor].push(item);
+                });
+
+                Object.keys(grouped).sort().forEach(setor => {
+                    grouped[setor].sort((a, b) => a.Range_Full.localeCompare(b.Range_Full));
+                    const card = document.createElement('div');
+                    card.className = 'sector-card';
+                    card.innerHTML = `
+                        <div class="sector-header">Setor: ${setor}</div>
+                        ${createTableHTML(grouped[setor])}
+                    `;
+                    contentArea.appendChild(card);
+                });
+            } else if (viewType === 'categoria') {
+                currentViewName = 'Agrupado por Nome';
+                const grouped = {};
+                reportData.forEach(item => {
+                    if (!grouped[item.Categoria]) grouped[item.Categoria] = [];
+                    grouped[item.Categoria].push(item);
+                });
+
+                Object.keys(grouped).sort().forEach(categoria => {
+                    grouped[categoria].sort((a, b) => a.Range_Full.localeCompare(b.Range_Full));
+                    const card = document.createElement('div');
+                    card.className = 'sector-card';
+                    card.innerHTML = `
+                        <div class="sector-header">Categoria: ${categoria}</div>
+                        ${createTableHTML(grouped[categoria])}
+                    `;
+                    contentArea.appendChild(card);
+                });
+            } else if (viewType === 'progresso') {
+                currentViewName = 'Ordenado por Progresso Geral';
+                const sorted = [...reportData].sort((a, b) => b.Progresso_Num - a.Progresso_Num);
+                const card = document.createElement('div');
+                card.className = 'sector-card';
+                card.innerHTML = `
+                    <div class="sector-header">Todas as Áreas (Ordenado por Progresso)</div>
+                    ${createTableHTML(sorted)}
+                `;
+                contentArea.appendChild(card);
+            }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdf-content');
+            const title = document.getElementById('pdf-title');
             
-            item.innerHTML = `<div class="falling-triangle" style="filter: hue-rotate(var(--dynamic-hue));"></div>`;
-            
-            item.style.left = Math.random() * 90 + 5 + "%";
-            
-            const duration = Math.random() * 3 + 2; // Caem mais rápido agora!
-            item.style.animationDuration = duration + "s";
-            item.style.animationDelay = Math.random() * 0.2 + "s";
-            
-            document.body.appendChild(item);
-            
-            const popItem = (e) => {
-                e.preventDefault();
-                
-                score += 15; // Pontos valem mais agora!
-                scoreEl.innerText = score;
-                
-                scoreContainer.style.transform = "scale(1.3) rotate(3deg)";
-                scoreContainer.style.borderColor = "#ffd700";
-                setTimeout(() => {
-                    scoreContainer.style.transform = "scale(1) rotate(0deg)";
-                    scoreContainer.style.borderColor = "rgba(120, 185, 40, 0.3)";
-                }, 200);
-                
-                const rect = item.getBoundingClientRect();
-                const x = rect.left + rect.width / 2;
-                const y = rect.top + rect.height / 2;
-                
-                createExplosion(x, y);
-                createMoneyText(x, y);
-                
-                item.remove();
+            // Mostrar título apenas para o PDF
+            title.style.display = 'block';
+
+            let safeDate = generationDate.replace(/:/g, '-').replace(/\//g, '-');
+            const opt = {
+                margin:       10,
+                filename:     `Relatório ${currentViewName} (${safeDate}).pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
             };
 
-            item.addEventListener("mousedown", popItem);
-            item.addEventListener("touchstart", popItem, {passive: false});
-            
-            item.addEventListener("animationend", () => {
-                if(item.parentNode) item.remove();
+            // Gerar o PDF usando html2pdf
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Esconder título novamente após gerar o PDF
+                title.style.display = 'none';
             });
         }
 
-        function createExplosion(x, y) {
-            const particleCount = 20; // Muito mais partículas (explosão épica)
-            for (let i = 0; i < particleCount; i++) {
-                const p = document.createElement("div");
-                p.className = "particle";
-                p.style.left = x + "px";
-                p.style.top = y + "px";
-                
-                const angle = (Math.PI * 2 / particleCount) * i;
-                const dist = 80 + Math.random() * 80; 
-                p.style.setProperty("--tx", Math.cos(angle) * dist + "px");
-                p.style.setProperty("--ty", Math.sin(angle) * dist + "px");
-                
-                document.body.appendChild(p);
-                setTimeout(() => { if(p.parentNode) p.remove(); }, 800);
+        window.onload = () => {
+            renderView('mapa');
+        };
+
+        // Escutar quando o mapa 3D disser que está pronto
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'MAPA_READY') {
+                const iframe = document.querySelector('#map-container iframe');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'REPORT_DATA', data: reportData }, '*');
+                }
             }
-        }
-
-        function createMoneyText(x, y) {
-            const m = document.createElement("div");
-            m.className = "floating-money";
-            m.innerText = "+💰R$"; 
-            m.style.left = (x - 40) + "px";
-            m.style.top = (y - 30) + "px";
-            document.body.appendChild(m);
-            setTimeout(() => { if(m.parentNode) m.remove(); }, 1000);
-        }
-
-        // Chove mais símbolos agora (1 a cada 600ms)
-        setInterval(spawnLeroy, 600);
-
+        });
     </script>
 </body>
 </html>
