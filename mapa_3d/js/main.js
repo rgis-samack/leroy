@@ -5,9 +5,9 @@ import { setupControls } from './controls.js';
 import { buildFloor, buildSectors, sectorMeshes } from './store.js';
 import { buildShelves } from './shelves.js';
 import { createLabels } from './labels.js';
-import { setupMinimap, renderMinimap } from './minimap.js';
-import { setupSearch, setupSidebar, selectSector, populateSectorList, setupKeyboardNavigation } from './search.js';
+import { setupSearch, setupSidebar, selectSector, populateSectorList, setupKeyboardNavigation, startTour, stopTour } from './search.js';
 import { sectorsData } from './store.js';
+import { buildEmployees } from './employees.js';
 
 // Get container
 const container = document.getElementById('canvas-container');
@@ -20,6 +20,7 @@ const controls = setupControls(camera, renderer);
 const floor = buildFloor(scene);
 buildSectors(scene);
 buildShelves(scene, sectorsData);
+buildEmployees(scene, sectorsData);
 
 function normalizeString(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
@@ -111,9 +112,6 @@ setupSidebar();
 setupSearch(camera, controls);
 setupKeyboardNavigation(camera, controls);
 
-// Setup Minimap
-const { cameraDot } = setupMinimap(scene, floor);
-
 // Raycaster for clicking
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -138,6 +136,26 @@ function onMouseDoubleClick(event) {
 window.addEventListener('dblclick', onMouseDoubleClick, false);
 window.addEventListener('resize', () => onWindowResize(camera), false);
 
+// --- Idle Timeout Logic ---
+let idleTimer = null;
+const IDLE_TIMEOUT = 5000; // 5 segundos
+
+function resetIdleTimer() {
+    stopTour();
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+        startTour(camera, controls);
+    }, IDLE_TIMEOUT);
+}
+
+// Escuta varios eventos para considerar que o usuario esta ativo
+['mousemove', 'keydown', 'mousedown', 'touchstart', 'wheel'].forEach(evt => {
+    window.addEventListener(evt, resetIdleTimer, { passive: true });
+});
+
+// Inicia o timer pela primeira vez
+resetIdleTimer();
+
 // Animation Loop
 const clock = new THREE.Clock();
 
@@ -150,10 +168,6 @@ function animate() {
     // Render main scene
     renderer.render(scene, camera);
 
-    // Render minimap
-    if (cameraDot) {
-        renderMinimap(camera, cameraDot);
-    }
 }
 
 // Start loop

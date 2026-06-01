@@ -160,3 +160,29 @@ export function setupSidebar() {
         sidebar.classList.add('hidden');
     });
 }
+
+// --- Tour Automatic Logic ---
+let tourInterval = null;
+
+export function cycleNextSector(camera, controls) {
+    if (sortedSectorsCache.length === 0) return;
+    currentSectorIndex = (currentSectorIndex + 1) % sortedSectorsCache.length;
+    selectSector(sortedSectorsCache[currentSectorIndex], camera, controls);
+}
+
+export function startTour(camera, controls) {
+    if (tourInterval) return;
+    // Pula pro proximo imediatamente e entao de 4 em 4 segundos
+    cycleNextSector(camera, controls);
+    tourInterval = setInterval(() => {
+        cycleNextSector(camera, controls);
+    }, 4000);
+}
+
+export function stopTour() {
+    if (tourInterval) {
+        clearInterval(tourInterval);
+        tourInterval = null;
+    }
+}
+

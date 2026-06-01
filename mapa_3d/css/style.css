@@ -51,17 +51,7 @@ body, html {
 
 /* Minimap */
 #minimap-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 250px;
-    height: 250px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-    border: 2px solid var(--primary);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    z-index: 10;
-    overflow: hidden;
+    display: none; /* Hiding the minimap entirely to give space for quick navigation */
 }
 
 #minimap-canvas {
@@ -73,10 +63,10 @@ body, html {
 /* Right Side Sector List */
 #sector-list-container {
     position: absolute;
-    top: 290px;
+    top: 20px;
     right: 20px;
     width: 250px;
-    max-height: calc(100vh - 310px);
+    max-height: calc(100vh - 40px);
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 12px;
