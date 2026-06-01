@@ -151,20 +151,30 @@ export function selectSector(sectorData, camera, controls, isTour = false) {
     let targetZOffset = 800;
     
     if (isTour) {
-        // Randomize angles for dynamic tour
+        // Randomize angles for dynamic tour with 5 different perspectives
         const rand = Math.random();
-        if (rand < 0.33) {
-            // Low angle
-            targetY = 200;
+        if (rand < 0.2) {
+            // Low angle inside the corridor
+            targetY = 120;
+            targetXOffset = (Math.random() > 0.5 ? 1 : -1) * 400;
+            targetZOffset = 0;
+        } else if (rand < 0.4) {
+            // Medium angle, diagonal close
+            targetY = 300;
             targetXOffset = (Math.random() > 0.5 ? 1 : -1) * 600;
             targetZOffset = (Math.random() > 0.5 ? 1 : -1) * 600;
-        } else if (rand < 0.66) {
+        } else if (rand < 0.6) {
             // Medium side angle
-            targetY = 400;
+            targetY = 450;
             targetXOffset = 800;
-            targetZOffset = 200;
+            targetZOffset = (Math.random() > 0.5 ? 1 : -1) * 200;
+        } else if (rand < 0.8) {
+            // High top-down perspective
+            targetY = 900;
+            targetXOffset = 100;
+            targetZOffset = 100;
         } else {
-            // High angle
+            // High angle diagonal
             targetY = 800;
             targetXOffset = 0;
             targetZOffset = 800;

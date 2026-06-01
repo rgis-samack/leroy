@@ -128,7 +128,8 @@ export function buildEmployees(scene, sectorsData) {
             workerClone.position.set(randomX, 0, randomZ);
             workerClone.rotation.y = Math.random() * Math.PI * 2;
 
-            const randomScale = 0.9 + Math.random() * 0.2;
+            // Scale to match the world sizing better (making them bigger compared to shelves)
+            const randomScale = 1.8 + Math.random() * 0.4; // between 1.8 and 2.2
             workerClone.scale.set(randomScale, randomScale, randomScale);
 
             scene.add(workerClone);
