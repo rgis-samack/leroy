@@ -3,558 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Progresso</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Inventário Finalizado</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #800020;
-            --primary-hover: #9c0b2d;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-dark: #333333;
-            --text-light: #666666;
-            --border: #e0e0e0;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
+            --brand-color: #78B928;
+            --dynamic-hue: 0deg;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
+        body, html {
             margin: 0;
-            padding: 10px;
-            font-size: 0.85rem;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030303;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            perspective: 1500px; /* Perspectiva profunda para o efeito 3D */
         }
 
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto 20px auto;
+        /* Efeito de luz mágica no fundo que acompanha o mouse */
+        .bg-glow {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(
+                circle 800px at var(--mouse-x) var(--mouse-y), 
+                rgba(120, 185, 40, 0.15), 
+                transparent 60%
+            );
+            z-index: 0;
+            pointer-events: none;
+            filter: hue-rotate(var(--dynamic-hue));
         }
+
+        #canvas-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            filter: hue-rotate(var(--dynamic-hue));
+        }
+
+        #score-container {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(120, 185, 40, 0.3);
+            box-shadow: 0 0 30px rgba(120, 185, 40, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.1s ease, border-color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #score-container span {
+            color: var(--brand-color);
+            filter: hue-rotate(var(--dynamic-hue));
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(120, 185, 40, 0.8);
+        }
+
+        /* O container agora é transparente, sem bordas ou fundo */
+        .content-wrapper {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            /* Efeito de levitação */
+            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .lm-logo {
+            position: relative;
+            width: 260px;
+            height: 180px;
+            margin: 0 auto 50px auto;
+            transform-style: preserve-3d;
+        }
+
+        .triangle {
+            width: 0; 
+            height: 0; 
+            border-left: 120px solid transparent;
+            border-right: 120px solid transparent;
+            border-bottom: 150px solid var(--brand-color);
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            filter: hue-rotate(var(--dynamic-hue)) drop-shadow(0 0 40px rgba(120, 185, 40, 0.6));
+            transition: filter 0.1s ease;
+            transform: translateZ(30px); /* Pula pra fora da tela em 3D */
+        }
+
+        .text-leroy, .text-merlin {
+            position: absolute;
+            color: white;
+            font-weight: 900;
+            font-size: 34px;
+            letter-spacing: 2px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: translateZ(50px); /* Fica mais saltado que o triângulo */
+        }
+
+        .text-leroy { transform: rotate(-52deg) translateZ(50px); left: -40px; top: 60px; }
+        .text-merlin { transform: rotate(52deg) translateZ(50px); right: -45px; top: 60px; }
 
         h1 {
-            color: var(--primary);
+            font-size: 5.5rem;
+            color: white;
             margin: 0;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .download-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .download-btn:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        .tab-btn {
-            background-color: #e9ecef;
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-dark);
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 2px 4px rgba(128, 0, 32, 0.3);
-        }
-
-        .tab-btn:hover:not(.active) {
-            background-color: #dee2e6;
-        }
-
-        /* ----- ESTILOS PADRÃO (VISÃO NORMAL) ----- */
-        #content-area {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .sector-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            page-break-inside: avoid;
-            break-inside: avoid;
-            -webkit-column-break-inside: avoid;
-        }
-
-        .sector-header {
-            background-color: var(--primary);
-            color: white;
-            padding: 10px 15px;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 8px 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: var(--text-light);
+            letter-spacing: -2px;
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transform: translateZ(40px);
         }
 
-        tr:last-child td {
-            border-bottom: none;
+        h1 span {
+            color: var(--brand-color);
+            filter: hue-rotate(var(--dynamic-hue));
+            transition: filter 0.1s ease;
+            text-shadow: 0 0 50px rgba(120, 185, 40, 0.6);
         }
 
-        tr:hover {
-            background-color: #f1f3f5;
-        }
-
-        .progress-container {
-            width: 100%;
-            background-color: #e9ecef;
-            border-radius: 10px;
-            height: 18px;
-            overflow: hidden;
+        .checkmark-wrapper {
+            margin-top: 50px;
             display: flex;
-            align-items: center;
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            transition: width 0.5s ease-in-out;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            transform: translateZ(60px);
         }
 
-        .progress-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            color: #333;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        }
-
-        .faltantes {
-            color: var(--danger);
-            font-weight: bold;
-        }
-
-        /* ----- VISÃO COMPACTA (AGRUPAR POR NOME / 6 POR PÁGINA) ----- */
-        #content-area.compact-view {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            align-items: start;
-        }
-
-        #content-area.compact-view .sector-card {
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        #content-area.compact-view .sector-header {
-            padding: 6px 10px;
-            font-size: 0.9rem;
-        }
-
-        #content-area.compact-view th, 
-        #content-area.compact-view td {
-            padding: 4px 6px;
-            font-size: 0.65rem;
-        }
-
-        #content-area.compact-view th {
-            font-size: 0.6rem;
-        }
-
-        #content-area.compact-view .progress-container {
-            border-radius: 5px;
-            height: 12px;
-        }
-
-        #content-area.compact-view .progress-text {
-            font-size: 0.55rem;
-        }
-
-        /* --- RESPONSIVIDADE MOBILE --- */
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-            .tabs {
-                flex-wrap: wrap;
-            }
-            .tab-btn {
-                flex: 1 1 40%;
-                font-size: 0.8rem;
-                padding: 8px 5px;
-                text-align: center;
-            }
-            #map-container {
-                height: 75vh !important;
-                min-height: 600px !important;
-                box-shadow: none !important; /* Remove sombra no mobile para mesclar melhor */
-            }
-        }
-
-        /* WhatsApp Popup */
-        .whatsapp-popup {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 9999;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transform: translateX(120%);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .whatsapp-popup.show {
-            transform: translateX(0);
-        }
-
-        .whatsapp-header {
-            background-color: #075E54;
-            color: #fff;
-            padding: 10px 15px;
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--brand-color);
+            border-radius: 50%;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            filter: hue-rotate(var(--dynamic-hue));
+            box-shadow: 0 0 30px rgba(120, 185, 40, 0.4), inset 0 0 20px rgba(120, 185, 40, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(120, 185, 40, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(120, 185, 40, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(120, 185, 40, 0); }
+        }
+
+        .checkmark svg { width: 40px; height: 40px; fill: none; stroke: var(--brand-color); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Estilos do Mini-Game Otimizados para Alto Impacto */
+        .falling-item {
+            position: absolute;
+            top: -100px;
+            cursor: crosshair;
+            z-index: 10;
+            transition: transform 0.1s;
+            animation: fall linear forwards;
+            filter: drop-shadow(0 0 20px rgba(120, 185, 40, 0.9));
         }
         
-        .whatsapp-name {
-            font-weight: 600;
-            font-size: 1rem;
+        .falling-item:active { transform: scale(0.6); }
+
+        .falling-triangle {
+            width: 0; height: 0; 
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 50px solid var(--brand-color);
         }
 
-        .whatsapp-body {
-            padding: 15px;
-            color: #303030;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            background-color: #E5DDD5;
-            position: relative;
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(calc(100vh + 100px)) rotate(720deg); opacity: 0; }
         }
 
-        .whatsapp-body::before {
-            content: "";
+        /* Explosão épica */
+        .particle {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            opacity: 0.08;
+            width: 12px;
+            height: 12px;
+            background-color: #ffd700;
+            border-radius: 50%;
             pointer-events: none;
+            z-index: 15;
+            animation: explodeEpic 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
+        }
+
+        @keyframes explodeEpic {
+            0% { opacity: 1; transform: scale(2) translate(0, 0); filter: brightness(2); }
+            100% { opacity: 0; transform: scale(0) translate(var(--tx), var(--ty)); filter: brightness(1); }
+        }
+
+        .floating-money {
+            position: absolute;
+            color: #ffd700;
+            font-size: 45px;
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 16;
+            animation: floatMoneyEpic 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,140,0,0.8);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        @keyframes floatMoneyEpic {
+            0% { opacity: 0; transform: translateY(20px) scale(0.5); }
+            20% { opacity: 1; transform: translateY(0) scale(1.5); }
+            100% { opacity: 0; transform: translateY(-150px) scale(2); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .lm-logo { transform: scale(0.6); margin-bottom: 0px; }
+            .checkmark { width: 60px; height: 60px; }
+            .checkmark svg { width: 30px; height: 30px; }
+            #score-container { top: 20px; right: 20px; font-size: 14px; padding: 10px 20px; }
+            #score-container span { font-size: 24px; }
+            .text-leroy { transform: rotate(-52deg) translateZ(0); }
+            .text-merlin { transform: rotate(52deg) translateZ(0); }
         }
     </style>
 </head>
 <body>
-    <div class="header-container" data-html2canvas-ignore="true">
-        <div>
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
-            <h1>Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 02/06/2026 às 11:26:24</div>
-        </div>
-        <button id="btn-download" class="download-btn" onclick="downloadPDF()">📥 Baixar PDF</button>
-    </div>
 
-    <div class="container" id="pdf-content">
-        <!-- Título que aparece só no PDF gerado -->
-        <div style="display:none; margin-bottom: 20px;" id="pdf-title">
-            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
-            <h1 style="margin: 0;">Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 02/06/2026 às 11:26:24</div>
-        </div>
+    <!-- Fundo Interativo de Constelação em Canvas -->
+    <canvas id="canvas-bg"></canvas>
 
-        <!-- Controles de Visualização -->
-        <div class="tabs" data-html2canvas-ignore="true">
-            <button class="tab-btn active" onclick="renderView('mapa')">Mapa 3D</button>
-            <button class="tab-btn" onclick="renderView('setor')">Agrupar por Setor</button>
-            <button class="tab-btn" onclick="renderView('categoria')">Agrupar por Nome</button>
-            <button class="tab-btn" onclick="renderView('progresso')">Ordenar por Progresso Geral</button>
+    <div class="bg-glow"></div>
+
+    <div id="score-container">Pontos 💰 <br><span id="score">0</span></div>
+
+    <!-- Container sem bordas, apenas levitando os elementos em 3D -->
+    <div class="content-wrapper" id="scene">
+        
+        <div class="lm-logo" id="logo">
+            <div class="triangle"></div>
+            <div class="text-leroy">LEROY</div>
+            <div class="text-merlin">MERLIN</div>
         </div>
 
-        <!-- Mapa 3D Container -->
-        <div id="map-container" style="width: 100%; height: 75vh; min-height: 500px; margin-bottom: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" data-html2canvas-ignore="true">
-            <iframe src="mapa_3d/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
-        </div>
+        <h1>Inventario <span>Finalizado</span></h1>
 
-        <!-- Onde os dados serão injetados -->
-        <div id="content-area" style="display: none;"></div>
-    </div>
-
-    <!-- WhatsApp Popup -->
-    
-    <div id="whatsapp-popup" class="whatsapp-popup">
-        <div class="whatsapp-header">
-            <div class="whatsapp-icon">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <div class="checkmark-wrapper">
+            <div class="checkmark">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
             </div>
-            <div class="whatsapp-name">RGIS</div>
         </div>
-        <div class="whatsapp-body">
-            PRECISO QUE AS ÁREAS NÃO USADAS SEJAM DEVOLVIDAS.
-        </div>
+
     </div>
-    
 
     <script>
-        const reportData = [{"Setor": "C050", "Categoria": "MATERIAS", "Range_Full": "01 - C050 - MATERIAS", "Total_Area": 100, "Areas_Contadas": 13, "Areas_Faltantes": 87, "Progresso": "13.00%", "Progresso_Num": 13.0}, {"Setor": "C070", "Categoria": "MATERIAS", "Range_Full": "01 - C070 - MATERIAS", "Total_Area": 50, "Areas_Contadas": 12, "Areas_Faltantes": 38, "Progresso": "24.00%", "Progresso_Num": 24.0}, {"Setor": "C050", "Categoria": "MADEIRAS", "Range_Full": "02 - C050 - MADEIRAS", "Total_Area": 51, "Areas_Contadas": 49, "Areas_Faltantes": 2, "Progresso": "96.08%", "Progresso_Num": 96.08}, {"Setor": "C070", "Categoria": "MADEIRAS", "Range_Full": "02 - C070 - MADEIRAS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ELETRICA", "Range_Full": "03 - C050 - ELETRICA", "Total_Area": 95, "Areas_Contadas": 47, "Areas_Faltantes": 48, "Progresso": "49.47%", "Progresso_Num": 49.47}, {"Setor": "C070", "Categoria": "ELETRICA", "Range_Full": "03 - C070 - ELETRICA", "Total_Area": 41, "Areas_Contadas": 0, "Areas_Faltantes": 41, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C050 - FERRAMENTAS", "Total_Area": 105, "Areas_Contadas": 36, "Areas_Faltantes": 69, "Progresso": "34.29%", "Progresso_Num": 34.29}, {"Setor": "C070", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C070 - FERRAMENTAS", "Total_Area": 50, "Areas_Contadas": 34, "Areas_Faltantes": 16, "Progresso": "68.00%", "Progresso_Num": 68.0}, {"Setor": "C050", "Categoria": "PISO LAMINADOS", "Range_Full": "05 - C050 - PISO LAMINADOS", "Total_Area": 20, "Areas_Contadas": 0, "Areas_Faltantes": 20, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C070", "Categoria": "PISO LAMINADOS", "Range_Full": "05 - C070 - PISO LAMINADOS", "Total_Area": 50, "Areas_Contadas": 0, "Areas_Faltantes": 50, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "CERAMICA", "Range_Full": "06 - C050 - CERAMICA", "Total_Area": 49, "Areas_Contadas": 0, "Areas_Faltantes": 49, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C070", "Categoria": "CERAMICA", "Range_Full": "06 - C070 - CERAMICA", "Total_Area": 15, "Areas_Contadas": 0, "Areas_Faltantes": 15, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "SANITARIOS", "Range_Full": "07 - C050 - SANITARIOS", "Total_Area": 107, "Areas_Contadas": 6, "Areas_Faltantes": 101, "Progresso": "5.61%", "Progresso_Num": 5.61}, {"Setor": "C070", "Categoria": "SANITARIOS", "Range_Full": "07 - C070 - SANITARIOS", "Total_Area": 45, "Areas_Contadas": 0, "Areas_Faltantes": 45, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C050 - ENCANAMENTOS", "Total_Area": 158, "Areas_Contadas": 0, "Areas_Faltantes": 158, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C070", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C070 - ENCANAMENTOS", "Total_Area": 32, "Areas_Contadas": 25, "Areas_Faltantes": 7, "Progresso": "78.13%", "Progresso_Num": 78.13}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09 - C050 - JARDIM", "Total_Area": 142, "Areas_Contadas": 75, "Areas_Faltantes": 67, "Progresso": "52.82%", "Progresso_Num": 52.82}, {"Setor": "C070", "Categoria": "JARDIM", "Range_Full": "09 - C070 - JARDIM", "Total_Area": 69, "Areas_Contadas": 33, "Areas_Faltantes": 36, "Progresso": "47.83%", "Progresso_Num": 47.83}, {"Setor": "C050", "Categoria": "FERRAGENS", "Range_Full": "10 - C050 - FERRAGENS", "Total_Area": 100, "Areas_Contadas": 24, "Areas_Faltantes": 76, "Progresso": "24.00%", "Progresso_Num": 24.0}, {"Setor": "C070", "Categoria": "FERRAGENS", "Range_Full": "10 - C070 - FERRAGENS", "Total_Area": 17, "Areas_Contadas": 14, "Areas_Faltantes": 3, "Progresso": "82.35%", "Progresso_Num": 82.35}, {"Setor": "C050", "Categoria": "PINTURA", "Range_Full": "11 - C050 - PINTURA", "Total_Area": 10, "Areas_Contadas": 0, "Areas_Faltantes": 10, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C070", "Categoria": "PINTURA", "Range_Full": "11 - C070 - PINTURA", "Total_Area": 20, "Areas_Contadas": 0, "Areas_Faltantes": 20, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "DECORACAO", "Range_Full": "12 - C050 - DECORACAO", "Total_Area": 89, "Areas_Contadas": 61, "Areas_Faltantes": 28, "Progresso": "68.54%", "Progresso_Num": 68.54}, {"Setor": "C070", "Categoria": "DECORACAO", "Range_Full": "12 - C070 - DECORACAO", "Total_Area": 37, "Areas_Contadas": 9, "Areas_Faltantes": 28, "Progresso": "24.32%", "Progresso_Num": 24.32}, {"Setor": "C050", "Categoria": "ILUMINACAO", "Range_Full": "13 - C050 - ILUMINACAO", "Total_Area": 117, "Areas_Contadas": 45, "Areas_Faltantes": 72, "Progresso": "38.46%", "Progresso_Num": 38.46}, {"Setor": "C070", "Categoria": "ILUMINACAO", "Range_Full": "13 - C070 - ILUMINACAO", "Total_Area": 51, "Areas_Contadas": 34, "Areas_Faltantes": 17, "Progresso": "66.67%", "Progresso_Num": 66.67}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C050 - ORGANIZACAO", "Total_Area": 76, "Areas_Contadas": 47, "Areas_Faltantes": 29, "Progresso": "61.84%", "Progresso_Num": 61.84}, {"Setor": "C070", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C070 - ORGANIZACAO", "Total_Area": 50, "Areas_Contadas": 50, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15 - C050 - COZINHAS", "Total_Area": 67, "Areas_Contadas": 24, "Areas_Faltantes": 43, "Progresso": "35.82%", "Progresso_Num": 35.82}, {"Setor": "C070", "Categoria": "COZINHAS", "Range_Full": "15 - C070 - COZINHAS", "Total_Area": 62, "Areas_Contadas": 62, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}];
-        const generationDate = "02/06/2026 às 11:26:24"; 
-        let currentViewName = '';
+        const scene = document.getElementById("scene");
+        const scoreEl = document.getElementById("score");
+        const scoreContainer = document.getElementById("score-container");
+        let score = 0;
 
-        function getProgressBarColor(progresso) {
-            if (progresso === 100) return 'var(--success)';
-            if (progresso >= 50) return 'var(--warning)';
-            return 'var(--danger)';
-        }
+        // Efeito de Mouse: Cores, Luzes e Parallax 3D
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
 
-        function createTableHTML(rows) {
-            let tbody = rows.map(r => `
-                <tr>
-                    <td>${r.Range_Full}</td>
-                    <td>${r.Setor}</td>
-                    <td>${r.Categoria}</td>
-                    <td>${r.Total_Area}</td>
-                    <td>${r.Areas_Contadas}</td>
-                    <td class="${r.Areas_Faltantes > 0 ? 'faltantes' : ''}">${r.Areas_Faltantes}</td>
-                    <td>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: ${r.Progresso_Num}%; background-color: ${getProgressBarColor(r.Progresso_Num)};"></div>
-                            <span class="progress-text">${r.Progresso}</span>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+        document.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
 
-            return `
-                <div style="overflow-x: auto; width: 100%;">
-                    <table style="min-width: 600px;">
-                        <thead>
-                            <tr>
-                                <th width="25%">Range</th>
-                                <th width="8%">Setor</th>
-                                <th width="15%">Nome</th>
-                                <th width="10%">Total Área</th>
-                                <th width="10%">Áreas Contadas</th>
-                                <th width="10%">Faltantes</th>
-                                <th width="22%">Progresso</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tbody}</tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function renderView(viewType) {
-            // Atualizar botões se o evento existir
-            if(event) {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                event.currentTarget.classList.add('active');
-            }
-
-            const contentArea = document.getElementById('content-area');
-            const mapContainer = document.getElementById('map-container');
-            const btnDownload = document.getElementById('btn-download');
-
-            if (viewType === 'mapa') {
-                contentArea.style.display = 'none';
-                mapContainer.style.display = 'block';
-                btnDownload.style.display = 'none';
-                return;
-            } else {
-                contentArea.style.display = '';
-                mapContainer.style.display = 'none';
-                btnDownload.style.display = 'inline-block';
-            }
-
-            contentArea.innerHTML = '';
-
-            // Adicionar layout compacto apenas se a visualização for 'categoria'
-            if (viewType === 'categoria') {
-                contentArea.classList.add('compact-view');
-            } else {
-                contentArea.classList.remove('compact-view');
-            }
-
-            if (viewType === 'setor') {
-                currentViewName = 'Agrupado por Setor';
-                const grouped = {};
-                reportData.forEach(item => {
-                    if (!grouped[item.Setor]) grouped[item.Setor] = [];
-                    grouped[item.Setor].push(item);
-                });
-
-                Object.keys(grouped).sort().forEach(setor => {
-                    grouped[setor].sort((a, b) => a.Range_Full.localeCompare(b.Range_Full));
-                    const card = document.createElement('div');
-                    card.className = 'sector-card';
-                    card.innerHTML = `
-                        <div class="sector-header">Setor: ${setor}</div>
-                        ${createTableHTML(grouped[setor])}
-                    `;
-                    contentArea.appendChild(card);
-                });
-            } else if (viewType === 'categoria') {
-                currentViewName = 'Agrupado por Nome';
-                const grouped = {};
-                reportData.forEach(item => {
-                    if (!grouped[item.Categoria]) grouped[item.Categoria] = [];
-                    grouped[item.Categoria].push(item);
-                });
-
-                Object.keys(grouped).sort().forEach(categoria => {
-                    grouped[categoria].sort((a, b) => a.Range_Full.localeCompare(b.Range_Full));
-                    const card = document.createElement('div');
-                    card.className = 'sector-card';
-                    card.innerHTML = `
-                        <div class="sector-header">Categoria: ${categoria}</div>
-                        ${createTableHTML(grouped[categoria])}
-                    `;
-                    contentArea.appendChild(card);
-                });
-            } else if (viewType === 'progresso') {
-                currentViewName = 'Ordenado por Progresso Geral';
-                const sorted = [...reportData].sort((a, b) => b.Progresso_Num - a.Progresso_Num);
-                const card = document.createElement('div');
-                card.className = 'sector-card';
-                card.innerHTML = `
-                    <div class="sector-header">Todas as Áreas (Ordenado por Progresso)</div>
-                    ${createTableHTML(sorted)}
-                `;
-                contentArea.appendChild(card);
-            }
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('pdf-content');
-            const title = document.getElementById('pdf-title');
+            // 1. Efeito de Luz no fundo
+            document.documentElement.style.setProperty("--mouse-x", `${mouseX}px`);
+            document.documentElement.style.setProperty("--mouse-y", `${mouseY}px`);
             
-            // Mostrar título apenas para o PDF
-            title.style.display = 'block';
+            // 2. Mudança Mágica de Cor
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const distX = (mouseX - centerX) / centerX;
+            const distY = (mouseY - centerY) / centerY;
+            
+            const hue = (distX * 50) + (distY * 40); 
+            document.documentElement.style.setProperty("--dynamic-hue", `${hue}deg`);
 
-            let safeDate = generationDate.replace(/:/g, '-').replace(/\//g, '-');
-            const opt = {
-                margin:       10,
-                filename:     `Relatório ${currentViewName} (${safeDate}).pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            };
+            // 3. Efeito Parallax 3D Holgráfico (Incrível)
+            // O texto e o logo se movem na direção oposta ao mouse em 3 dimensões
+            const rotateX = (distY * -15).toFixed(2); // Até 15 graus de rotação
+            const rotateY = (distX * 15).toFixed(2);
+            scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
 
-            // Gerar o PDF usando html2pdf
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Esconder título novamente após gerar o PDF
-                title.style.display = 'none';
+        // ----- SISTEMA DO CANVAS (CONSTELAÇÃO DE LUZES) -----
+        const canvas = document.getElementById("canvas-bg");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        // Cria as partículas de luz ao fundo
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5,
+                radius: Math.random() * 2 + 1
             });
         }
 
-        window.onload = () => {
-            renderView('mapa');
-        };
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "rgba(120, 185, 40, 0.6)";
+            ctx.lineWidth = 1;
 
-        // Escutar quando o mapa 3D disser que está pronto
-        window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'MAPA_READY') {
-                const iframe = document.querySelector('#map-container iframe');
-                if (iframe && iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({ type: 'REPORT_DATA', data: reportData }, '*');
-                }
-            }
-        });
-
-        // WhatsApp Popup Logic
-        
-        function showWhatsAppPopup() {
-            const popup = document.getElementById('whatsapp-popup');
-            if(popup) {
-                popup.classList.add('show');
-                // Hide after 10 seconds
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                }, 10000);
-            }
-        }
-        
-        // Show after a few seconds initially
-        setTimeout(showWhatsAppPopup, 3000);
-        
-        // Then every 3 minutes (180000 ms)
-        setInterval(showWhatsAppPopup, 180000);
-        
-
-        // Auto-refresh (F5) automatically when new data is uploaded to GitHub
-        let lastVersionHash = null;
-        setInterval(() => {
-            fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
-            .then(response => {
-                const lastMod = response.headers.get('Last-Modified') || '';
-                const eTag = response.headers.get('ETag') || '';
-                const currentHash = lastMod + eTag;
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
                 
-                if (currentHash) {
-                    if (lastVersionHash === null) {
-                        lastVersionHash = currentHash;
-                    } else if (currentHash !== lastVersionHash) {
-                        // The file changed on the server! Give it an F5.
-                        window.location.reload();
+                // Bate nas bordas e volta
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Conecta partículas próximas
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        // A linha fica mais transparente quanto mais longe
+                        ctx.strokeStyle = `rgba(120, 185, 40, ${0.2 - dist/600})`;
+                        ctx.stroke();
                     }
                 }
-            })
-            .catch(() => {});
-        }, 15000); // Check every 15 seconds
+                
+                // Conecta com o mouse
+                let distMouse = Math.hypot(p.x - mouseX, p.y - mouseY);
+                if (distMouse < 200) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(mouseX, mouseY);
+                    ctx.strokeStyle = `rgba(120, 185, 40, ${0.4 - distMouse/500})`;
+                    ctx.stroke();
+                }
+            }
+            requestAnimationFrame(drawCanvas);
+        }
+        drawCanvas();
+
+        // ----- SISTEMA DO MINI-GAME (Épico) -----
+        function spawnLeroy() {
+            const item = document.createElement("div");
+            item.className = "falling-item";
+            
+            item.innerHTML = `<div class="falling-triangle" style="filter: hue-rotate(var(--dynamic-hue));"></div>`;
+            
+            item.style.left = Math.random() * 90 + 5 + "%";
+            
+            const duration = Math.random() * 3 + 2; // Caem mais rápido agora!
+            item.style.animationDuration = duration + "s";
+            item.style.animationDelay = Math.random() * 0.2 + "s";
+            
+            document.body.appendChild(item);
+            
+            const popItem = (e) => {
+                e.preventDefault();
+                
+                score += 15; // Pontos valem mais agora!
+                scoreEl.innerText = score;
+                
+                scoreContainer.style.transform = "scale(1.3) rotate(3deg)";
+                scoreContainer.style.borderColor = "#ffd700";
+                setTimeout(() => {
+                    scoreContainer.style.transform = "scale(1) rotate(0deg)";
+                    scoreContainer.style.borderColor = "rgba(120, 185, 40, 0.3)";
+                }, 200);
+                
+                const rect = item.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                
+                createExplosion(x, y);
+                createMoneyText(x, y);
+                
+                item.remove();
+            };
+
+            item.addEventListener("mousedown", popItem);
+            item.addEventListener("touchstart", popItem, {passive: false});
+            
+            item.addEventListener("animationend", () => {
+                if(item.parentNode) item.remove();
+            });
+        }
+
+        function createExplosion(x, y) {
+            const particleCount = 20; // Muito mais partículas (explosão épica)
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement("div");
+                p.className = "particle";
+                p.style.left = x + "px";
+                p.style.top = y + "px";
+                
+                const angle = (Math.PI * 2 / particleCount) * i;
+                const dist = 80 + Math.random() * 80; 
+                p.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+                p.style.setProperty("--ty", Math.sin(angle) * dist + "px");
+                
+                document.body.appendChild(p);
+                setTimeout(() => { if(p.parentNode) p.remove(); }, 800);
+            }
+        }
+
+        function createMoneyText(x, y) {
+            const m = document.createElement("div");
+            m.className = "floating-money";
+            m.innerText = "+💰R$"; 
+            m.style.left = (x - 40) + "px";
+            m.style.top = (y - 30) + "px";
+            document.body.appendChild(m);
+            setTimeout(() => { if(m.parentNode) m.remove(); }, 1000);
+        }
+
+        // Chove mais símbolos agora (1 a cada 600ms)
+        setInterval(spawnLeroy, 600);
+
     </script>
 </body>
 </html>
