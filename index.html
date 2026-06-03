@@ -107,10 +107,9 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             overflow: hidden;
             border: 1px solid var(--border);
-            page-break-inside: avoid;
-            break-inside: avoid;
-            -webkit-column-break-inside: avoid;
+            margin-bottom: 20px;
         }
+        tr { page-break-inside: avoid; break-inside: avoid; }
 
         .sector-header {
             background-color: var(--primary);
@@ -306,7 +305,7 @@
         <div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1>Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 20:01:11</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 20:09:18</div>
         </div>
         
         
@@ -319,12 +318,12 @@
         <div style="display:none; margin-bottom: 20px;" id="pdf-title">
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1 style="margin: 0;">Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 20:01:11</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 20:09:18</div>
         </div>
 
         <!-- Controles de Visualização -->
         
-          <div id="global-progress-bar" style="display:none; text-align: center; margin-bottom: 20px;" data-html2canvas-ignore="true">
+          <div id="global-progress-bar" style="display:none; text-align: center; margin-bottom: 20px;">
               <div style="font-size: 0.85rem; font-weight: bold; color: var(--text-dark); margin-bottom: 3px;">Areas CountedTotal</div>
               <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                   <div style="width: 250px; height: 22px; background-color: #eee; border-radius: 11px; overflow: hidden; position: relative; border: 1px solid #ccc;">
@@ -379,7 +378,7 @@
             });
         }
 
-        const generationDate = "03/06/2026 às 20:01:11"; 
+        const generationDate = "03/06/2026 às 20:09:18"; 
         let currentViewName = '';
 
         function getProgressBarColor(progresso) {
@@ -519,7 +518,8 @@
                 filename:     `Relatório ${currentViewName} (${safeDate}).pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
+                pagebreak:    { mode: ['css', 'legacy'] }
             };
 
             // Gerar o PDF usando html2pdf
