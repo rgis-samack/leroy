@@ -306,8 +306,24 @@
         <div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1>Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 17:37:30</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 19:30:08</div>
         </div>
+        
+        <div id="global-stats" style="display:none; background: #fff; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; margin-left: 20px; flex: 1; justify-content: space-around; border: 1px solid var(--border);">
+            <div>
+                <div style="font-size: 0.75rem; color: var(--primary); font-weight: bold; text-transform: uppercase;">Total da Área</div>
+                <div id="gs-total-area" style="font-size: 1.4rem; font-weight: bold; color: var(--text-dark);">0</div>
+            </div>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--primary); font-weight: bold; text-transform: uppercase;">Áreas Contadas</div>
+                <div id="gs-contadas" style="font-size: 1.4rem; font-weight: bold; color: var(--text-dark);">0</div>
+            </div>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--primary); font-weight: bold; text-transform: uppercase;">Progresso Geral</div>
+                <div id="gs-percent" style="font-size: 1.4rem; font-weight: bold; color: var(--text-dark);">0%</div>
+            </div>
+        </div>
+        
         <button id="btn-download" class="download-btn" onclick="downloadPDF()">📥 Baixar PDF</button>
     </div>
 
@@ -316,7 +332,7 @@
         <div style="display:none; margin-bottom: 20px;" id="pdf-title">
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1 style="margin: 0;">Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 17:37:30</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 19:30:08</div>
         </div>
 
         <!-- Controles de Visualização -->
@@ -338,22 +354,10 @@
 
     <!-- WhatsApp Popup -->
     
-    <div id="whatsapp-popup" class="whatsapp-popup">
-        <div class="whatsapp-header">
-            <div class="whatsapp-icon">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </div>
-            <div class="whatsapp-name">Samack</div>
-        </div>
-        <div class="whatsapp-body">
-            Boa Noite
-        </div>
-    </div>
-    
 
     <script>
-        const reportData = [{"Setor": "C050", "Categoria": "MATERIAS", "Range_Full": "01 - C050 - MATERIAS", "Total_Area": 105, "Areas_Contadas": 26, "Areas_Faltantes": 79, "Progresso": "24.76%", "Progresso_Num": 24.76}, {"Setor": "C070", "Categoria": "MATERIAS", "Range_Full": "01 - C070 - MATERIAS", "Total_Area": 14, "Areas_Contadas": 14, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "MADEIRAS", "Range_Full": "02 - C050 - MADEIRAS", "Total_Area": 52, "Areas_Contadas": 52, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "MADEIRAS", "Range_Full": "02 - C070 - MADEIRAS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ELETRICA", "Range_Full": "03 - C050 - ELETRICA", "Total_Area": 93, "Areas_Contadas": 90, "Areas_Faltantes": 3, "Progresso": "96.77%", "Progresso_Num": 96.77}, {"Setor": "C070", "Categoria": "ELETRICA", "Range_Full": "03 - C070 - ELETRICA", "Total_Area": 21, "Areas_Contadas": 21, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C050 - FERRAMENTAS", "Total_Area": 79, "Areas_Contadas": 60, "Areas_Faltantes": 19, "Progresso": "75.95%", "Progresso_Num": 75.95}, {"Setor": "C070", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C070 - FERRAMENTAS", "Total_Area": 38, "Areas_Contadas": 36, "Areas_Faltantes": 2, "Progresso": "94.74%", "Progresso_Num": 94.74}, {"Setor": "C050", "Categoria": "CERAMICA", "Range_Full": "06 - C050 - CERAMICA", "Total_Area": 10, "Areas_Contadas": 10, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "SANITARIOS", "Range_Full": "07 - C050 - SANITARIOS", "Total_Area": 101, "Areas_Contadas": 66, "Areas_Faltantes": 35, "Progresso": "65.35%", "Progresso_Num": 65.35}, {"Setor": "C070", "Categoria": "SANITARIOS", "Range_Full": "07 - C070 - SANITARIOS", "Total_Area": 44, "Areas_Contadas": 44, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C050 - ENCANAMENTOS", "Total_Area": 67, "Areas_Contadas": 16, "Areas_Faltantes": 51, "Progresso": "23.88%", "Progresso_Num": 23.88}, {"Setor": "C070", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C070 - ENCANAMENTOS", "Total_Area": 32, "Areas_Contadas": 29, "Areas_Faltantes": 3, "Progresso": "90.63%", "Progresso_Num": 90.63}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09 - C050 - JARDIM", "Total_Area": 143, "Areas_Contadas": 119, "Areas_Faltantes": 24, "Progresso": "83.22%", "Progresso_Num": 83.22}, {"Setor": "C070", "Categoria": "JARDIM", "Range_Full": "09 - C070 - JARDIM", "Total_Area": 68, "Areas_Contadas": 68, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAGENS", "Range_Full": "10 - C050 - FERRAGENS", "Total_Area": 94, "Areas_Contadas": 63, "Areas_Faltantes": 31, "Progresso": "67.02%", "Progresso_Num": 67.02}, {"Setor": "C070", "Categoria": "FERRAGENS", "Range_Full": "10 - C070 - FERRAGENS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "DECORACAO", "Range_Full": "12 - C050 - DECORACAO", "Total_Area": 59, "Areas_Contadas": 58, "Areas_Faltantes": 1, "Progresso": "98.31%", "Progresso_Num": 98.31}, {"Setor": "C070", "Categoria": "DECORACAO", "Range_Full": "12 - C070 - DECORACAO", "Total_Area": 36, "Areas_Contadas": 36, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ILUMINACAO", "Range_Full": "13 - C050 - ILUMINACAO", "Total_Area": 120, "Areas_Contadas": 117, "Areas_Faltantes": 3, "Progresso": "97.50%", "Progresso_Num": 97.5}, {"Setor": "C070", "Categoria": "ILUMINACAO", "Range_Full": "13 - C070 - ILUMINACAO", "Total_Area": 66, "Areas_Contadas": 64, "Areas_Faltantes": 2, "Progresso": "96.97%", "Progresso_Num": 96.97}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C050 - ORGANIZACAO", "Total_Area": 76, "Areas_Contadas": 65, "Areas_Faltantes": 11, "Progresso": "85.53%", "Progresso_Num": 85.53}, {"Setor": "C070", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C070 - ORGANIZACAO", "Total_Area": 50, "Areas_Contadas": 50, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15 - C050 - COZINHAS", "Total_Area": 64, "Areas_Contadas": 52, "Areas_Faltantes": 12, "Progresso": "81.25%", "Progresso_Num": 81.25}, {"Setor": "C070", "Categoria": "COZINHAS", "Range_Full": "15 - C070 - COZINHAS", "Total_Area": 62, "Areas_Contadas": 62, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}];
-        const generationDate = "03/06/2026 às 17:37:30"; 
+        const reportData = [{"Setor": "C050", "Categoria": "MATERIAS", "Range_Full": "01 - C050 - MATERIAS", "Total_Area": 105, "Areas_Contadas": 26, "Areas_Faltantes": 79, "Progresso": "24.76%", "Progresso_Num": 24.76}, {"Setor": "C070", "Categoria": "MATERIAS", "Range_Full": "01 - C070 - MATERIAS", "Total_Area": 14, "Areas_Contadas": 14, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "MADEIRAS", "Range_Full": "02 - C050 - MADEIRAS", "Total_Area": 52, "Areas_Contadas": 52, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "MADEIRAS", "Range_Full": "02 - C070 - MADEIRAS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ELETRICA", "Range_Full": "03 - C050 - ELETRICA", "Total_Area": 93, "Areas_Contadas": 92, "Areas_Faltantes": 1, "Progresso": "98.93%", "Progresso_Num": 98.93}, {"Setor": "C070", "Categoria": "ELETRICA", "Range_Full": "03 - C070 - ELETRICA", "Total_Area": 21, "Areas_Contadas": 21, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C050 - FERRAMENTAS", "Total_Area": 79, "Areas_Contadas": 60, "Areas_Faltantes": 19, "Progresso": "75.95%", "Progresso_Num": 75.95}, {"Setor": "C070", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C070 - FERRAMENTAS", "Total_Area": 38, "Areas_Contadas": 36, "Areas_Faltantes": 2, "Progresso": "94.74%", "Progresso_Num": 94.74}, {"Setor": "C050", "Categoria": "CERAMICA", "Range_Full": "06 - C050 - CERAMICA", "Total_Area": 10, "Areas_Contadas": 10, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "SANITARIOS", "Range_Full": "07 - C050 - SANITARIOS", "Total_Area": 101, "Areas_Contadas": 71, "Areas_Faltantes": 30, "Progresso": "70.30%", "Progresso_Num": 70.3}, {"Setor": "C070", "Categoria": "SANITARIOS", "Range_Full": "07 - C070 - SANITARIOS", "Total_Area": 44, "Areas_Contadas": 44, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C050 - ENCANAMENTOS", "Total_Area": 67, "Areas_Contadas": 16, "Areas_Faltantes": 51, "Progresso": "23.88%", "Progresso_Num": 23.88}, {"Setor": "C070", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C070 - ENCANAMENTOS", "Total_Area": 32, "Areas_Contadas": 32, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09 - C050 - JARDIM", "Total_Area": 143, "Areas_Contadas": 130, "Areas_Faltantes": 13, "Progresso": "90.91%", "Progresso_Num": 90.91}, {"Setor": "C070", "Categoria": "JARDIM", "Range_Full": "09 - C070 - JARDIM", "Total_Area": 68, "Areas_Contadas": 68, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAGENS", "Range_Full": "10 - C050 - FERRAGENS", "Total_Area": 94, "Areas_Contadas": 63, "Areas_Faltantes": 31, "Progresso": "67.02%", "Progresso_Num": 67.02}, {"Setor": "C070", "Categoria": "FERRAGENS", "Range_Full": "10 - C070 - FERRAGENS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "DECORACAO", "Range_Full": "12 - C050 - DECORACAO", "Total_Area": 59, "Areas_Contadas": 58, "Areas_Faltantes": 1, "Progresso": "98.31%", "Progresso_Num": 98.31}, {"Setor": "C070", "Categoria": "DECORACAO", "Range_Full": "12 - C070 - DECORACAO", "Total_Area": 36, "Areas_Contadas": 36, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ILUMINACAO", "Range_Full": "13 - C050 - ILUMINACAO", "Total_Area": 120, "Areas_Contadas": 118, "Areas_Faltantes": 2, "Progresso": "98.33%", "Progresso_Num": 98.33}, {"Setor": "C070", "Categoria": "ILUMINACAO", "Range_Full": "13 - C070 - ILUMINACAO", "Total_Area": 66, "Areas_Contadas": 64, "Areas_Faltantes": 2, "Progresso": "96.97%", "Progresso_Num": 96.97}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C050 - ORGANIZACAO", "Total_Area": 76, "Areas_Contadas": 65, "Areas_Faltantes": 11, "Progresso": "85.53%", "Progresso_Num": 85.53}, {"Setor": "C070", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C070 - ORGANIZACAO", "Total_Area": 50, "Areas_Contadas": 50, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15 - C050 - COZINHAS", "Total_Area": 64, "Areas_Contadas": 52, "Areas_Faltantes": 12, "Progresso": "81.25%", "Progresso_Num": 81.25}, {"Setor": "C070", "Categoria": "COZINHAS", "Range_Full": "15 - C070 - COZINHAS", "Total_Area": 62, "Areas_Contadas": 62, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}];
+        const generationDate = "03/06/2026 às 19:30:08"; 
         let currentViewName = '';
 
         function getProgressBarColor(progresso) {
@@ -518,23 +522,6 @@
         });
 
         // WhatsApp Popup Logic
-        
-        function showWhatsAppPopup() {
-            const popup = document.getElementById('whatsapp-popup');
-            if(popup) {
-                popup.classList.add('show');
-                // Hide after 10 seconds
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                }, 10000);
-            }
-        }
-        
-        // Show after a few seconds initially
-        setTimeout(showWhatsAppPopup, 3000);
-        
-        // Then every 3 minutes (180000 ms)
-        setInterval(showWhatsAppPopup, 180000);
         
     </script>
 
