@@ -299,13 +299,184 @@
             pointer-events: none;
         }
     </style>
+
+    <style>
+        /* --- LOGIN SCREEN STYLES --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            background-color: #030303;
+            --brand-color: #78B928;
+            --dynamic-hue: 0deg;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            font-family: 'Montserrat', sans-serif;
+            perspective: 1500px;
+        }
+
+        .bg-glow {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(
+                circle 800px at var(--mouse-x) var(--mouse-y), 
+                rgba(120, 185, 40, 0.15), 
+                transparent 60%
+            );
+            z-index: 0;
+            pointer-events: none;
+            filter: hue-rotate(var(--dynamic-hue));
+        }
+
+        #canvas-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            filter: hue-rotate(var(--dynamic-hue));
+        }
+
+        .login-box {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+            background: rgba(20, 20, 20, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(120, 185, 40, 0.3);
+            box-shadow: 0 0 30px rgba(120, 185, 40, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .lm-logo {
+            position: relative;
+            width: 260px;
+            height: 180px;
+            margin: 0 auto 30px auto;
+            transform-style: preserve-3d;
+        }
+
+        .triangle {
+            width: 0; height: 0; 
+            border-left: 120px solid transparent;
+            border-right: 120px solid transparent;
+            border-bottom: 150px solid var(--brand-color);
+            position: absolute;
+            bottom: 0; left: 10px;
+            filter: hue-rotate(var(--dynamic-hue)) drop-shadow(0 0 40px rgba(120, 185, 40, 0.6));
+            transition: filter 0.1s ease;
+            transform: translateZ(30px);
+        }
+
+        .text-leroy, .text-merlin {
+            position: absolute;
+            color: white;
+            font-weight: 900;
+            font-size: 34px;
+            letter-spacing: 2px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: translateZ(50px);
+        }
+        .text-leroy { transform: rotate(-52deg) translateZ(50px); left: -40px; top: 60px; }
+        .text-merlin { transform: rotate(52deg) translateZ(50px); right: -45px; top: 60px; }
+
+        .rgis-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .rgis-logo span { color: var(--brand-color); filter: hue-rotate(var(--dynamic-hue)); }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(120, 185, 40, 0.5);
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .login-input:focus {
+            border-color: var(--brand-color);
+            box-shadow: 0 0 15px rgba(120, 185, 40, 0.5);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--brand-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            filter: hue-rotate(var(--dynamic-hue));
+        }
+        .login-btn:hover {
+            transform: scale(1.05);
+            filter: hue-rotate(var(--dynamic-hue)) brightness(1.2);
+        }
+
+        #login-error {
+            color: #ff4d4d;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            font-weight: bold;
+        }
+    </style>
+
 </head>
 <body>
+
+    <div id="login-overlay">
+        <canvas id="canvas-bg"></canvas>
+        <div class="bg-glow"></div>
+        <div class="login-box" id="scene">
+            <div class="lm-logo" id="logo">
+                <div class="triangle"></div>
+                <div class="text-leroy">LEROY</div>
+                <div class="text-merlin">MERLIN</div>
+            </div>
+            <div class="rgis-logo">RGIS <span>SECURE</span></div>
+            <input type="text" id="login-user" class="login-input" placeholder="Usuário" autocomplete="off">
+            <input type="password" id="login-pass" class="login-input" placeholder="Senha">
+            <button class="login-btn" onclick="attemptLogin()">ACESSAR PAINEL</button>
+            <div id="login-error">Acesso Negado. Credenciais inválidas.</div>
+        </div>
+    </div>
+
+    <script id="secure-data" type="application/json">
+        {"nonce_data": "QMeOoBnuHXaW2YIC", "ciphertext_data": "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", "users": [{"username": "samack", "salt": "Pfm8jICDgROsU6vFZmYnnw==", "nonce": "5rqsJSTiaRYp1MkK", "encrypted_master_key": "oPCI+6U67387VqJZSbbQHUW1PdEAWkq8Bj3H5VMgn4dyE3S71Dh6nsMDeg9vTKl7"}]}
+    </script>
+    <div id="app-content" style="display:none; height:100vh; overflow-y:auto;">
+
     <div class="header-container" data-html2canvas-ignore="true">
         <div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1>Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 10:22:36</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 11:32:50</div>
         </div>
         <button id="btn-download" class="download-btn" onclick="downloadPDF()">📥 Baixar PDF</button>
     </div>
@@ -315,7 +486,7 @@
         <div style="display:none; margin-bottom: 20px;" id="pdf-title">
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 4px;">Samack RGIS Aracaju-SE</div>
             <h1 style="margin: 0;">Relatório de Progresso Dinâmico</h1>
-            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 10:22:36</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Última atualização: 03/06/2026 às 11:32:50</div>
         </div>
 
         <!-- Controles de Visualização -->
@@ -339,10 +510,149 @@
     
 
     <script>
-        let reportData = [{"Setor": "C050", "Categoria": "MATERIAS", "Range_Full": "01 - C050 - MATERIAS", "Total_Area": 106, "Areas_Contadas": 24, "Areas_Faltantes": 82, "Progresso": "22.64%", "Progresso_Num": 22.64}, {"Setor": "C070", "Categoria": "MATERIAS", "Range_Full": "01 - C070 - MATERIAS", "Total_Area": 12, "Areas_Contadas": 12, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "MADEIRAS", "Range_Full": "02 - C050 - MADEIRAS", "Total_Area": 51, "Areas_Contadas": 51, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C070", "Categoria": "MADEIRAS", "Range_Full": "02 - C070 - MADEIRAS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "ELETRICA", "Range_Full": "03 - C050 - ELETRICA", "Total_Area": 95, "Areas_Contadas": 74, "Areas_Faltantes": 21, "Progresso": "77.90%", "Progresso_Num": 77.9}, {"Setor": "C070", "Categoria": "ELETRICA", "Range_Full": "03 - C070 - ELETRICA", "Total_Area": 21, "Areas_Contadas": 0, "Areas_Faltantes": 21, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C050 - FERRAMENTAS", "Total_Area": 105, "Areas_Contadas": 73, "Areas_Faltantes": 32, "Progresso": "69.52%", "Progresso_Num": 69.52}, {"Setor": "C070", "Categoria": "FERRAMENTAS", "Range_Full": "04 - C070 - FERRAMENTAS", "Total_Area": 38, "Areas_Contadas": 36, "Areas_Faltantes": 2, "Progresso": "94.74%", "Progresso_Num": 94.74}, {"Setor": "C050", "Categoria": "PISO LAMINADOS", "Range_Full": "05 - C050 - PISO LAMINADOS", "Total_Area": 20, "Areas_Contadas": 0, "Areas_Faltantes": 20, "Progresso": ".00%", "Progresso_Num": 0.0}, {"Setor": "C050", "Categoria": "SANITARIOS", "Range_Full": "07 - C050 - SANITARIOS", "Total_Area": 107, "Areas_Contadas": 43, "Areas_Faltantes": 64, "Progresso": "40.19%", "Progresso_Num": 40.19}, {"Setor": "C070", "Categoria": "SANITARIOS", "Range_Full": "07 - C070 - SANITARIOS", "Total_Area": 45, "Areas_Contadas": 42, "Areas_Faltantes": 3, "Progresso": "93.33%", "Progresso_Num": 93.33}, {"Setor": "C050", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C050 - ENCANAMENTOS", "Total_Area": 67, "Areas_Contadas": 1, "Areas_Faltantes": 66, "Progresso": "1.49%", "Progresso_Num": 1.49}, {"Setor": "C070", "Categoria": "ENCANAMENTOS", "Range_Full": "08 - C070 - ENCANAMENTOS", "Total_Area": 32, "Areas_Contadas": 28, "Areas_Faltantes": 4, "Progresso": "87.50%", "Progresso_Num": 87.5}, {"Setor": "C050", "Categoria": "JARDIM", "Range_Full": "09 - C050 - JARDIM", "Total_Area": 143, "Areas_Contadas": 106, "Areas_Faltantes": 37, "Progresso": "74.13%", "Progresso_Num": 74.13}, {"Setor": "C070", "Categoria": "JARDIM", "Range_Full": "09 - C070 - JARDIM", "Total_Area": 66, "Areas_Contadas": 66, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "FERRAGENS", "Range_Full": "10 - C050 - FERRAGENS", "Total_Area": 100, "Areas_Contadas": 56, "Areas_Faltantes": 44, "Progresso": "56.00%", "Progresso_Num": 56.0}, {"Setor": "C070", "Categoria": "FERRAGENS", "Range_Full": "10 - C070 - FERRAGENS", "Total_Area": 17, "Areas_Contadas": 17, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "DECORACAO", "Range_Full": "12 - C050 - DECORACAO", "Total_Area": 89, "Areas_Contadas": 61, "Areas_Faltantes": 28, "Progresso": "68.54%", "Progresso_Num": 68.54}, {"Setor": "C070", "Categoria": "DECORACAO", "Range_Full": "12 - C070 - DECORACAO", "Total_Area": 36, "Areas_Contadas": 17, "Areas_Faltantes": 19, "Progresso": "47.22%", "Progresso_Num": 47.22}, {"Setor": "C050", "Categoria": "ILUMINACAO", "Range_Full": "13 - C050 - ILUMINACAO", "Total_Area": 122, "Areas_Contadas": 100, "Areas_Faltantes": 22, "Progresso": "81.97%", "Progresso_Num": 81.97}, {"Setor": "C070", "Categoria": "ILUMINACAO", "Range_Full": "13 - C070 - ILUMINACAO", "Total_Area": 51, "Areas_Contadas": 40, "Areas_Faltantes": 11, "Progresso": "78.43%", "Progresso_Num": 78.43}, {"Setor": "C050", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C050 - ORGANIZACAO", "Total_Area": 76, "Areas_Contadas": 65, "Areas_Faltantes": 11, "Progresso": "85.53%", "Progresso_Num": 85.53}, {"Setor": "C070", "Categoria": "ORGANIZACAO", "Range_Full": "14 - C070 - ORGANIZACAO", "Total_Area": 50, "Areas_Contadas": 50, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}, {"Setor": "C050", "Categoria": "COZINHAS", "Range_Full": "15 - C050 - COZINHAS", "Total_Area": 64, "Areas_Contadas": 46, "Areas_Faltantes": 18, "Progresso": "71.88%", "Progresso_Num": 71.88}, {"Setor": "C070", "Categoria": "COZINHAS", "Range_Full": "15 - C070 - COZINHAS", "Total_Area": 62, "Areas_Contadas": 62, "Areas_Faltantes": 0, "Progresso": "100.00%", "Progresso_Num": 100.0}];
-        const generationDate = "03/06/2026 às 10:22:36"; 
+
+        // --- LOGIN & CRYPTO LOGIC ---
+        let securePayload = null;
+        try {
+            securePayload = JSON.parse(document.getElementById('secure-data').textContent);
+        } catch(e) {}
+        
+        const scene = document.getElementById("scene");
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener("mousemove", (e) => {
+            if(document.getElementById('login-overlay').style.display === 'none') return;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            document.documentElement.style.setProperty("--mouse-x", `${mouseX}px`);
+            document.documentElement.style.setProperty("--mouse-y", `${mouseY}px`);
+            
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const distX = (mouseX - centerX) / centerX;
+            const distY = (mouseY - centerY) / centerY;
+            
+            const hue = (distX * 50) + (distY * 40); 
+            document.documentElement.style.setProperty("--dynamic-hue", `${hue}deg`);
+
+            const rotateX = (distY * -15).toFixed(2);
+            const rotateY = (distX * 15).toFixed(2);
+            scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        const canvas = document.getElementById("canvas-bg");
+        if(canvas) {
+            const ctx = canvas.getContext("2d");
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    radius: Math.random() * 2 + 1
+                });
+            }
+
+            function drawCanvas() {
+                if(document.getElementById('login-overlay').style.display === 'none') return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(120, 185, 40, 0.6)";
+                ctx.lineWidth = 1;
+
+                for (let i = 0; i < particles.length; i++) {
+                    let p = particles[i];
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+                    
+                    for (let j = i + 1; j < particles.length; j++) {
+                        let p2 = particles[j];
+                        let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if (dist < 120) {
+                            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(120, 185, 40, ${0.2 - dist/600})`; ctx.stroke();
+                        }
+                    }
+                    let distMouse = Math.hypot(p.x - mouseX, p.y - mouseY);
+                    if (distMouse < 200) {
+                        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouseX, mouseY);
+                        ctx.strokeStyle = `rgba(120, 185, 40, ${0.4 - distMouse/500})`; ctx.stroke();
+                    }
+                }
+                requestAnimationFrame(drawCanvas);
+            }
+            drawCanvas();
+        }
+
+        async function attemptLogin() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const btn = document.querySelector('.login-btn');
+            
+            if(!user || !pass) return;
+            
+            btn.innerText = "VERIFICANDO...";
+            document.getElementById('login-error').style.display = 'none';
+
+            try {
+                const userObj = securePayload.users.find(u => u.username === user);
+                if (!securePayload || !securePayload.users) throw new Error("securePayload está vazio ou corrompido");
+                const userObj = securePayload.users.find(u => u.username === user);
+                if (!userObj) throw new Error("Usuário não encontrado");
+
+                const salt = Uint8Array.from(atob(userObj.salt), c => c.charCodeAt(0));
+                const nonceUser = Uint8Array.from(atob(userObj.nonce), c => c.charCodeAt(0));
+                const encryptedMasterKey = Uint8Array.from(atob(userObj.encrypted_master_key), c => c.charCodeAt(0));
+                
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(pass), {name: "PBKDF2"}, false, ["deriveKey"]);
+                
+                const userKey = await crypto.subtle.deriveKey(
+                    {name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256"},
+                    keyMaterial,
+                    {name: "AES-GCM", length: 256},
+                    false,
+                    ["decrypt"]
+                );
+
+                const masterKeyBuffer = await crypto.subtle.decrypt({name: "AES-GCM", iv: nonceUser}, userKey, encryptedMasterKey);
+                const masterKey = await crypto.subtle.importKey("raw", masterKeyBuffer, {name: "AES-GCM"}, false, ["decrypt"]);
+
+                const nonceData = Uint8Array.from(atob(securePayload.nonce_data), c => c.charCodeAt(0));
+                const ciphertextData = Uint8Array.from(atob(securePayload.ciphertext_data), c => c.charCodeAt(0));
+                
+                const dataBuffer = await crypto.subtle.decrypt({name: "AES-GCM", iv: nonceData}, masterKey, ciphertextData);
+                const dataJsonStr = new TextDecoder().decode(dataBuffer);
+                
+                window.APP_DATA = JSON.parse(dataJsonStr);
+                
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                
+                if (window.initDashboard) window.initDashboard();
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('login-error').innerText = 'Erro: ' + (e.message || 'Credenciais inválidas'); document.getElementById('login-error').style.display = 'block';
+                btn.innerText = "ACESSAR PAINEL";
+            }
+        }
+
+        let reportData = null;
+        window.initDashboard = () => { reportData = window.APP_DATA; renderView('mapa'); };
+        const generationDate = "03/06/2026 às 11:32:50"; 
         let currentViewName = '';
-        let currentViewType = 'mapa';
 
         function getProgressBarColor(progresso) {
             if (progresso === 100) return 'var(--success)';
@@ -389,7 +699,6 @@
         }
 
         function renderView(viewType) {
-            currentViewType = viewType;
             // Atualizar botões se o evento existir
             if(event) {
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -492,29 +801,7 @@
             });
         }
 
-        window.onload = () => {
-            renderView('mapa');
-
-            // Auto-refresh via Fetch a cada 2 minutos (120000 ms)
-            setInterval(() => {
-                fetch('last_data.json', { cache: 'no-store' })
-                    .then(r => {
-                        if(!r.ok) throw new Error('Network response was not ok');
-                        return r.json();
-                    })
-                    .then(data => {
-                        if (JSON.stringify(data) !== JSON.stringify(reportData)) {
-                            reportData = data;
-                            renderView(currentViewType);
-                            const iframe = document.querySelector('#map-container iframe');
-                            if (iframe && iframe.contentWindow) {
-                                iframe.contentWindow.postMessage({ type: 'REPORT_DATA', data: reportData }, '*');
-                            }
-                        }
-                    })
-                    .catch(e => console.log('Silent auto-update error:', e));
-            }, 120000);
-        };
+        
 
         // Escutar quando o mapa 3D disser que está pronto
         window.addEventListener('message', (event) => {
@@ -529,5 +816,6 @@
         // WhatsApp Popup Logic
         
     </script>
+    </div>
 </body>
 </html>
