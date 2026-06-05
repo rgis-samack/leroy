@@ -30,10 +30,21 @@ function processDynamicData(reportData) {
     sectorsData.forEach(sector => {
         const sectorNorm = normalizeString(sector.name);
         
-        // Find all rows where Categoria matches our sector name
-        // Handling special case for JARDIM / JARDINS
         const matchingRows = reportData.filter(row => {
-            const catNorm = normalizeString(row.Categoria);
+            // Regra 1: Prioridade pela numeração (ID) no Range (ex: "01 - C050 - MATERIAS" => id: 1)
+            if (row.Range_Full) {
+                const rangeMatch = row.Range_Full.match(/^(\d+)/);
+                if (rangeMatch) {
+                    const rangeId = parseInt(rangeMatch[1], 10);
+                    // Se a numeração inicial do Range bater exatamente com o ID do setor (ex: 01 == id 1)
+                    if (rangeId === sector.id) {
+                        return true;
+                    }
+                }
+            }
+
+            // Regra 2: Fallback para verificação de nome
+            const catNorm = normalizeString(row.Categoria || '');
             return catNorm.includes(sectorNorm) || sectorNorm.includes(catNorm) || 
                    (catNorm === 'JARDINS' && sectorNorm === 'JARDIM');
         });
